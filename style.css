@@ -1,0 +1,13 @@
+<style>
+body {
+    background-color: black;
+}
+</style>
+
+<canvas></canvas>
+
+<script>
+const canvas = document.querySelector('canvas')
+const c = canvas.getContext('2d')
+c.fillRect(0,0, canvas.width, canvas.height) 
+</script>
