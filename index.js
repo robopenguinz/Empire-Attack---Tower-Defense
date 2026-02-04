@@ -11,4 +11,4 @@ const image = new Image()
 image.onload = () => {
     c.drawImage(image, 0, 0)
 }
-image.src = 'img/gameMap.png'
+image.src = 'img/map1.png'
