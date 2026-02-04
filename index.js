@@ -19,6 +19,7 @@ class Ememy {
     this.position = position
     this.width = 100
     this.height = 100
+    this.waypointIndex = 0
     }
 
 draw() {
@@ -28,9 +29,22 @@ draw() {
 
 update() {
     this.draw()
-    this.position.x += 1
    
+    const waypoint = waypoints[this.waypointIndex]
+    const yDistance = waypoint.y -this.position.y
+    const xDistance = waypoint.x -this.position.x
     const angle = Math.atan2(yDistance, xDistance)
+    this.position.x += Math.cos(angle)
+    this.position.y += Math.sin(angle)
+
+    console.log(Math.round(this.position.x))
+
+    if (
+        this.position.x === waypoint.x && 
+        this.position.y === waypoint.y
+    ) {
+        this.waypointIndex++
+    }
 }
 }
 
