@@ -15,11 +15,8 @@ image.onload = () => {
 image.src = 'img/map1.png'
 
 class Ememy {
-    constructor() {
-    this.position = {
-        x: 0,
-        y: 0
-    }
+    constructor({position = {x:0, y:0}}) {
+    this.position = position
     this.width = 100
     this.height = 100
     }
@@ -32,17 +29,21 @@ draw() {
 update() {
     this.draw()
     this.position.x += 1
-    this.position.y += 1
+   
+    const angle = Math.atan2(yDistance, xDistance)
 }
 }
 
-const ememy = new Ememy()
+const ememy = new Ememy({position: {x:200, y:400}})
+const ememy2 = new Ememy({position: {x:400, y:400}})
+
 
 function animate() {
     requestAnimationFrame(animate)
 
     c.drawImage(image, 0, 0)
     ememy.update()
+    ememy2.update()
 }
 
 let x = 200
