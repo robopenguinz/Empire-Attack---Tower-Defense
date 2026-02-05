@@ -1,4 +1,4 @@
-const canvas = document.querySelector('canvas' )
+const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
 canvas.width = 1280
@@ -14,59 +14,55 @@ image.onload = () => {
 }
 image.src = 'img/map1.png'
 
-class Ememy {
+class Enemy {
     constructor({position = {x:0, y:0}}) {
-    this.position = position
-    this.width = 100
-    this.height = 100
-    this.waypointIndex = 0
+        this.position = position
+        this.width = 100
+        this.height = 100
+        this.waypointIndex = 0
+        this.center = {
+            x: this.position.x + this.width / 2,
+            y: this.position.y + this.height / 2
+        }
     }
 
-draw() {
-    c.fillStyle = 'red'
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
-}
+    draw() {
+        c.fillStyle = 'red'
+        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+    }
 
-update() {
-    this.draw()
-   
-    const waypoint = waypoints[this.waypointIndex]
-    const yDistance = waypoint.y -this.position.y
-    const xDistance = waypoint.x -this.position.x
-    const angle = Math.atan2(yDistance, xDistance)
-    this.position.x += Math.cos(angle)
-    this.position.y += Math.sin(angle)
+    update() {
+        this.draw()
+       
+        const waypoint = waypoints[this.waypointIndex]
+        const yDistance = waypoint.y - this.center.y
+        const xDistance = waypoint.x - this.center.x
+        const angle = Math.atan2(yDistance, xDistance)
+        this.position.x += Math.cos(angle)
+        this.position.y += Math.sin(angle)
+        this.center = {
+            x: this.position.x + this.width / 2,
+            y: this.position.y + this.height / 2
+        }
 
-    console.log(Math.round(this.position.x))
-
-    if (
-        this.position.x === waypoint.x && 
-        this.position.y === waypoint.y
-    ) {
-        this.waypointIndex++
+        if (
+            Math.round(this.center.x) === Math.round(waypoint.x) && 
+            Math.round(this.center.y) === Math.round(waypoint.y) && 
+            this.waypointIndex < waypoints.length - 1
+        ) {
+            this.waypointIndex++
+        }
     }
 }
-}
 
-const ememy = new Ememy({position: {x:200, y:400}})
-const ememy2 = new Ememy({position: {x:400, y:400}})
+// Create enemies AFTER the class definition but BEFORE animate()
+const enemy = new Enemy({position: {x: waypoints[0].x, y: waypoints[0].y}})
+const enemy2 = new Enemy({position: {x: waypoints[0].x - 150, y: waypoints[0].y}})
 
-
+// Define animate() AFTER creating the enemies
 function animate() {
     requestAnimationFrame(animate)
-
     c.drawImage(image, 0, 0)
-    ememy.update()
-    ememy2.update()
-}
-
-let x = 200
-function animate() {
-    requestAnimationFrame(animate)
-
-    c.drawImage(image, 0, 0)
-
-    c.fillStyle = 'red'
-    c.fillRect(200, 400, 100, 100)
-    x++
+    enemy.update()
+    enemy2.update()
 }
