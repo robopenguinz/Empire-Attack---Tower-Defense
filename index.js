@@ -55,14 +55,22 @@ class Enemy {
     }
 }
 
-// Create enemies AFTER the class definition but BEFORE animate()
+const enemies = []
+for (let i = 0; i<10; i++) {
+    enemies.push(
+        new Enemy({
+            position: {x: waypoints[0].x - xOffset, y: waypoints[0].y}
+        })
+    )
+}
 const enemy = new Enemy({position: {x: waypoints[0].x, y: waypoints[0].y}})
 const enemy2 = new Enemy({position: {x: waypoints[0].x - 150, y: waypoints[0].y}})
 
-// Define animate() AFTER creating the enemies
 function animate() {
     requestAnimationFrame(animate)
+
     c.drawImage(image, 0, 0)
-    enemy.update()
-    enemy2.update()
+    enemies.forEach(enemy => {
+        enemy.update()
+})
 }
