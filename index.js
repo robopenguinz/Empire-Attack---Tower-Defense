@@ -7,6 +7,8 @@ canvas.height = 768
 c.fillStyle = 'white'
 c.fillRect(0, 0, canvas.width, canvas.height)
 
+console.log
+
 const image = new Image()
 
 image.onload = () => {
@@ -56,7 +58,7 @@ class Enemy {
 }
 
 const enemies = []
-for (let i = 0; i<10; i++) {
+for (let i = 1; i<10; i++) {
     enemies.push(
         new Enemy({
             position: {x: waypoints[0].x - xOffset, y: waypoints[0].y}
