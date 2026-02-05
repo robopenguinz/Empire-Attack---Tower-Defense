@@ -7,7 +7,14 @@ canvas.height = 768
 c.fillStyle = 'white'
 c.fillRect(0, 0, canvas.width, canvas.height)
 
-console.log
+console.log(placementTilesData)
+const placementTilesData2D = []
+
+for (let i = 0; i < placementTilesData.length; i += 20) {
+    placementTilesData2D.push(placementTilesData.slice(i, i + 20))
+}
+
+console.log(placementTilesData2D)
 
 const image = new Image()
 
