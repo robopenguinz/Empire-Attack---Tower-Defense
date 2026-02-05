@@ -14,6 +14,24 @@ for (let i = 0; i < placementTilesData.length; i += 20) {
     placementTilesData2D.push(placementTilesData.slice(i, i + 20))
 }
 
+class PlacementTile {
+    constructor ({position = {x: 0, y:0}}) {
+        this.position = position
+    }
+
+draw() {
+    c.fillRect(this.position.x, this.position.y, this.size, this.size)
+}
+}
+
+placementTilesData2D.forEach(row => {
+    row.forEach(symbol => {
+        if (symbol === 14) {
+
+        }
+})
+})
+
 console.log(placementTilesData2D)
 
 const image = new Image()
