@@ -14,17 +14,6 @@ for (let i = 0; i < placementTilesData.length; i += 20) {
     placementTilesData2D.push(placementTilesData.slice(i, i + 20))
 }
 
-class PlacementTile {
-    constructor ({position = {x: 0, y:0}}) {
-        this.position = position
-        this.size = 64
-    }
-
-    draw() {
-        c.fillRect(this.position.x, this.position.y, this.size, this.size)
-    }
-}
-
 const placementTiles = []
 
 placementTilesData2D.forEach((row, y) => {
@@ -50,56 +39,19 @@ image.onload = () => {
 }
 image.src = 'img/map1.png'
 
-class Enemy {
-    constructor({position = {x:0, y:0}}) {
-        this.position = position
-        this.width = 100
-        this.height = 100
-        this.waypointIndex = 0
-        this.center = {
-            x: this.position.x + this.width / 2,
-            y: this.position.y + this.height / 2
-        }
-    }
-
-    draw() {
-        c.fillStyle = 'red'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
-
-    update() {
-        this.draw()
-       
-        const waypoint = waypoints[this.waypointIndex]
-        const yDistance = waypoint.y - this.center.y
-        const xDistance = waypoint.x - this.center.x
-        const angle = Math.atan2(yDistance, xDistance)
-        this.position.x += Math.cos(angle)
-        this.position.y += Math.sin(angle)
-        this.center = {
-            x: this.position.x + this.width / 2,
-            y: this.position.y + this.height / 2
-        }
-
-        if (
-            Math.round(this.center.x) === Math.round(waypoint.x) && 
-            Math.round(this.center.y) === Math.round(waypoint.y) && 
-            this.waypointIndex < waypoints.length - 1
-        ) {
-            this.waypointIndex++
-        }
-    }
-}
-
 const enemies = []
 for (let i = 1; i < 10; i++) {
-    const xOffset = i * 150  // ADDED THIS LINE - defines xOffset based on enemy number
+    const xOffset = i * 150 
     enemies.push(
         new Enemy({
             position: {x: waypoints[0].x - xOffset, y: waypoints[0].y}
         })
     )
+    console.log(waypoints[0].x - xOffset) 
 }
+
+const buildings = []
+let activeTile = undefined
 
 function animate() {
     requestAnimationFrame(animate)
@@ -111,6 +63,51 @@ function animate() {
     })
     
     placementTiles.forEach(tile => {
-        tile.draw()
+        tile.update(mouse)
     })
+
+    buildings.forEach(building => {
+        building.draw()
+})
 }
+
+const mouse = {
+    x: undefined,
+    y: undefined
+}
+
+canvas.addEventListener('click', (event) => {
+    if (activeTile && !activeTile.occupied) {
+        buildings.push(
+            new Building ({
+            position: {
+                x: activeTile.position.x,
+                y: activeTile.position.y
+            }
+        })
+        )
+        activeTile.isOccupied = true
+}
+console.log(buildings)
+})
+
+window.addEventListener('mousemove', (event) => {
+  mouse.x = event.clientX
+  mouse.y = event.clientY
+    
+  activeTile = null
+for (let i = 0; i < placementTiles.length; i++) {
+    const tile = placementTiles[i]
+    if (
+        mouse.x > tile.position.x && 
+        mouse.x < tile.position.x + tile.size &&
+        mouse.y > tile.position.y && 
+        mouse.y < tile.position.y + tile.size
+    ){
+        activeTile = tile
+        break
+    }
+}
+console.log(activeTile)
+})
+        
