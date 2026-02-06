@@ -17,19 +17,28 @@ for (let i = 0; i < placementTilesData.length; i += 20) {
 class PlacementTile {
     constructor ({position = {x: 0, y:0}}) {
         this.position = position
+        this.size = 64
     }
 
-draw() {
-    c.fillRect(this.position.x, this.position.y, this.size, this.size)
-}
+    draw() {
+        c.fillRect(this.position.x, this.position.y, this.size, this.size)
+    }
 }
 
-placementTilesData2D.forEach(row => {
-    row.forEach(symbol => {
+const placementTiles = []
+
+placementTilesData2D.forEach((row, y) => {
+    row.forEach((symbol, x) => {
         if (symbol === 14) {
-
+            // add building tile here
+            placementTiles.push(new PlacementTile({
+                position: {
+                    x: x * 64,
+                    y: y * 64
+                }
+            }))
         }
-})
+    })
 })
 
 console.log(placementTilesData2D)
@@ -83,21 +92,25 @@ class Enemy {
 }
 
 const enemies = []
-for (let i = 1; i<10; i++) {
+for (let i = 1; i < 10; i++) {
+    const xOffset = i * 150  // ADDED THIS LINE - defines xOffset based on enemy number
     enemies.push(
         new Enemy({
             position: {x: waypoints[0].x - xOffset, y: waypoints[0].y}
         })
     )
 }
-const enemy = new Enemy({position: {x: waypoints[0].x, y: waypoints[0].y}})
-const enemy2 = new Enemy({position: {x: waypoints[0].x - 150, y: waypoints[0].y}})
 
 function animate() {
     requestAnimationFrame(animate)
 
     c.drawImage(image, 0, 0)
+    
     enemies.forEach(enemy => {
         enemy.update()
-})
+    })
+    
+    placementTiles.forEach(tile => {
+        tile.draw()
+    })
 }
