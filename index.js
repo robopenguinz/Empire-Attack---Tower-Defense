@@ -53,18 +53,37 @@ function spawnEnemies(spawnCount) {
 const buildings = []
 let activeTile = undefined
 let enemyCount = 3
+let hearts = 10
 spawnEnemies(enemyCount)
 
 function animate() {
-    requestAnimationFrame(animate)
+    const animationId = requestAnimationFrame(animate)
 
     c.drawImage(image, 0, 0)
 
 for (let i = enemies.length - 1; i >= 0; i--) {
     const enemy = enemies[i]
     enemy.update()
+
+    if (enemy.position.x > canvas.width) {
+        hearts -= 1
+        enemies.splice(i, 1)
+        console.log(hearts)
+
+        if (hearts === 0) {
+
+         console.log('Game Over')
+         cancelAnimationFrame(animationId)
+            document.querySelector('#gameOver').style.display = 'flex'
+        }
+    }
 }
-    
+
+if (enemies.length === 0) {
+    enemyCount += 2
+    spawnEnemies(enemyCount)
+}
+
     placementTiles.forEach(tile => {
         tile.update(mouse)
     })
@@ -100,13 +119,6 @@ buildings.forEach(building => {
 
             if (enemyIndex > -1) enemies.splice(enemyIndex, 1)
           }
-
-          if (enemies.length === 0) {
-            enemyCount += 2
-            spawnEnemies(enemyCount)
-          }
-
-          // tracking total amount of enemies 
           console.log(projectile.enemy.health)
           building.projectiles.splice(i, 1)
             }
