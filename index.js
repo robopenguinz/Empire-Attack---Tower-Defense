@@ -83,16 +83,12 @@ buildings.forEach(building => {
         const yDifference = projectile.enemy.center.y - projectile.position.y
         const distance = Math.hypot(xDifference, yDifference)
         
+        // When projectile hits enemy
         if (distance < projectile.enemy.radius + projectile.radius) {
-            // Remove projectile
-            building.projectiles.splice(i, 1)
-            
-            // Damage or remove enemy
-            const enemyIndex = enemies.indexOf(projectile.enemy)
-            if (enemyIndex > -1) {
-                enemies.splice(enemyIndex, 1)
+          projectile.enemy.health -= 20
+          console.log(projectile.enemy.health)
+          building.projectiles.splice(i, 1)
             }
-        }
     }
 })
 }
