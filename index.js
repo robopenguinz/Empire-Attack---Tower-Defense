@@ -64,7 +64,15 @@ for (let i = enemies.length - 1; i >= 0; i--) {
         tile.update(mouse)
     })
 buildings.forEach(building => {
-    building.draw()
+    building.update()
+    building.target = null
+    const validEnemies = enemies.filter(enemy => {
+        const xDifference = enemy.center.x - building.center.x
+        const yDifference = enemy.center.y - building.center.y
+        const distance = Math.hypot(xDifference, yDifference)
+        return distance < enemy.radius + building.radius
+    })
+    building.target = validEnemies[0]
 
     for (let i = building.projectiles.length - 1; i >= 0; i--) {
         const projectile = building.projectiles[i] 
