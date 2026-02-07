@@ -37,8 +37,10 @@ image.onload = () => {
 }
 image.src = 'img/map1.png'
 
-const enemies = []
-for (let i = 1; i < 10; i++) {
+const enemies = []  
+
+function spawnEnemies(spawnCount) {
+    for (let i = 1; i < spawnCount + 1; i++) {
     const xOffset = i * 150 
     enemies.push(
         new Enemy({
@@ -46,9 +48,12 @@ for (let i = 1; i < 10; i++) {
         })
     ) 
 }
+}
 
 const buildings = []
 let activeTile = undefined
+let enemyCount = 3
+spawnEnemies(enemyCount)
 
 function animate() {
     requestAnimationFrame(animate)
@@ -86,14 +91,22 @@ buildings.forEach(building => {
         
         // When projectile hits enemy
         if (distance < projectile.enemy.radius + projectile.radius) {
-          projectile.enemy.health -= 20
+         // enemy health and enemy removal
+            projectile.enemy.health -= 20
           if (projectile.enemy.health <= 0) {
             const enemyIndex = enemies.findIndex((enemy) => {
                     return projectile.enemy === enemy
                 })
-                if (enemyIndex > -1) 
+
             if (enemyIndex > -1) enemies.splice(enemyIndex, 1)
           }
+
+          if (enemies.length === 0) {
+            enemyCount += 2
+            spawnEnemies(enemyCount)
+          }
+
+          // tracking total amount of enemies 
           console.log(projectile.enemy.health)
           building.projectiles.splice(i, 1)
             }

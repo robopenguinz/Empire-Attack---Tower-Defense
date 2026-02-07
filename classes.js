@@ -100,6 +100,11 @@ draw() {
 update() {
     this.draw()
 
+    // Check if enemy still exists
+    if (!this.enemy || this.enemy.health <= 0) {
+        return // Stop updating if enemy is dead/gone
+    }
+
     const angle = Math.atan2(
         this.enemy.center.y - this.position.y,
         this.enemy.center.x - this.position.x 
@@ -111,7 +116,7 @@ update() {
 
     this.position.x += this.velocity.x
     this.position.y += this.velocity.y
-    }
+}
 }
 
 class Building {
