@@ -54,7 +54,7 @@ function animate() {
     requestAnimationFrame(animate)
 
     c.drawImage(image, 0, 0)
-    
+
 for (let i = enemies.length - 1; i >= 0; i--) {
     const enemy = enemies[i]
     enemy.update()
@@ -63,6 +63,7 @@ for (let i = enemies.length - 1; i >= 0; i--) {
     placementTiles.forEach(tile => {
         tile.update(mouse)
     })
+    
 buildings.forEach(building => {
     building.update()
     building.target = null
@@ -86,13 +87,19 @@ buildings.forEach(building => {
         // When projectile hits enemy
         if (distance < projectile.enemy.radius + projectile.radius) {
           projectile.enemy.health -= 20
+          if (projectile.enemy.health <= 0) {
+            const enemyIndex = enemies.findIndex((enemy) => {
+                    return projectile.enemy === enemy
+                })
+                if (enemyIndex > -1) 
+            if (enemyIndex > -1) enemies.splice(enemyIndex, 1)
+          }
           console.log(projectile.enemy.health)
           building.projectiles.splice(i, 1)
             }
     }
 })
 }
-
 const mouse = {
     x: undefined,
     y: undefined
@@ -131,4 +138,3 @@ for (let i = 0; i < placementTiles.length; i++) {
 }
 console.log(activeTile)
 })
-        
