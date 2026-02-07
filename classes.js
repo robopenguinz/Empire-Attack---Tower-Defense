@@ -21,7 +21,6 @@ update (mouse) {
         mouse.y > this.position.y && 
         mouse.y < this.position.y + this.size
     ) {
-    console.log('colliding' )
     this.color = 'white'
     } else this.color = 'rgba(255, 255, 255, .15)'
 }
@@ -37,11 +36,15 @@ class Enemy {
             x: this.position.x + this.width / 2,
             y: this.position.y + this.height / 2
         }
+        this.radius = 50
     }
 
     draw() {
         c.fillStyle = 'red'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        //c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.beginPath()
+        c.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2)
+        c.fill()
     }
 
     update() {
@@ -69,17 +72,19 @@ class Enemy {
 }
 
 class Projectile {
-    constructor({position = {x:0, y:0}}) {
+    constructor({position = {x:0, y:0}, enemy}) {
         this.position = position 
         this.velocity = {
         x: 0,
         y: 0
     }
+    this.enemy = enemy
+    this.radius = 10
 }
 
 draw() {
     c.beginPath()
-    c.arc(this.position.x, this.position.y, 10, 0, Math.PI * 2)
+    c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
     c.fillStyle = 'orange'
     c.fill()
 }
@@ -88,8 +93,8 @@ update() {
     this.draw()
 
     const angle = Math.atan2(
-        enemies[0].position.y - this.position.y,
-        enemies[0].position.x - this.position.x 
+        enemies[0].center.y - this.position.y,
+        enemies[0].center.x - this.position.x 
     )
     this.velocity.x = Math.cos(angle)
     this.velocity.y = Math.sin(angle)
@@ -113,7 +118,8 @@ class Building {
                 position: {
                     x: this.center.x,
                     y: this.center.y
-                }
+                },
+                enemy: enemies[0]
             })
         ]
     }

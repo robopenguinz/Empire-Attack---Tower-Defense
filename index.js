@@ -30,8 +30,6 @@ placementTilesData2D.forEach((row, y) => {
     })
 })
 
-console.log(placementTilesData2D)
-
 const image = new Image()
 
 image.onload = () => {
@@ -46,8 +44,7 @@ for (let i = 1; i < 10; i++) {
         new Enemy({
             position: {x: waypoints[0].x - xOffset, y: waypoints[0].y}
         })
-    )
-    console.log(waypoints[0].x - xOffset) 
+    ) 
 }
 
 const buildings = []
@@ -58,20 +55,37 @@ function animate() {
 
     c.drawImage(image, 0, 0)
     
-    enemies.forEach(enemy => {
-        enemy.update()
-    })
+for (let i = enemies.length - 1; i >= 0; i--) {
+    const enemy = enemies[i]
+    enemy.update()
+}
     
     placementTiles.forEach(tile => {
         tile.update(mouse)
     })
+buildings.forEach(building => {
+    building.draw()
 
-    buildings.forEach(building => {
-        building.draw()
+    for (let i = building.projectiles.length - 1; i >= 0; i--) {
+        const projectile = building.projectiles[i] 
+    
+        projectile.update()
 
-        building.projectiles.forEach(projectile => {
-            projectile.update()
-        })
+        const xDifference = projectile.enemy.center.x - projectile.position.x
+        const yDifference = projectile.enemy.center.y - projectile.position.y
+        const distance = Math.hypot(xDifference, yDifference)
+        
+        if (distance < projectile.enemy.radius + projectile.radius) {
+            // Remove projectile
+            building.projectiles.splice(i, 1)
+            
+            // Damage or remove enemy
+            const enemyIndex = enemies.indexOf(projectile.enemy)
+            if (enemyIndex > -1) {
+                enemies.splice(enemyIndex, 1)
+            }
+        }
+    }
 })
 }
 
@@ -81,18 +95,17 @@ const mouse = {
 }
 
 canvas.addEventListener('click', (event) => {
-    if (activeTile && !activeTile.occupied) {
+    if (activeTile && !activeTile.occupied) {  
         buildings.push(
             new Building ({
-            position: {
-                x: activeTile.position.x,
-                y: activeTile.position.y
-            }
-        })
+                position: {
+                    x: activeTile.position.x,
+                    y: activeTile.position.y
+                }
+            })
         )
-        activeTile.isOccupied = true
-}
-console.log(buildings)
+        activeTile.occupied = true  
+        }
 })
 
 window.addEventListener('mousemove', (event) => {
