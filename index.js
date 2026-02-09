@@ -99,34 +99,39 @@ buildings.forEach(building => {
     })
     building.target = validEnemies[0]
 
-    for (let i = building.projectiles.length - 1; i >= 0; i--) {
-        const projectile = building.projectiles[i] 
+for (let i = building.projectiles.length - 1; i >= 0; i--) {
+    const projectile = building.projectiles[i] 
     
-        projectile.update()
+    projectile.update()
 
-        const xDifference = projectile.enemy.center.x - projectile.position.x
-        const yDifference = projectile.enemy.center.y - projectile.position.y
-        const distance = Math.hypot(xDifference, yDifference)
-        
-        // When projectile hits enemy
-        if (distance < projectile.enemy.radius + projectile.radius) {
-         // enemy health and enemy removal
-            projectile.enemy.health -= 20
-          if (projectile.enemy.health <= 0) {
+    
+    if (!projectile.enemy || projectile.enemy.health <= 0) {
+        building.projectiles.splice(i, 1)
+        continue
+    }
+
+    const xDifference = projectile.enemy.center.x - projectile.position.x
+    const yDifference = projectile.enemy.center.y - projectile.position.y
+    const distance = Math.hypot(xDifference, yDifference)
+    
+    // When projectile hits enemy
+    if (distance < projectile.enemy.radius + projectile.radius) {
+        // enemy health and enemy removal
+        projectile.enemy.health -= 20
+        if (projectile.enemy.health <= 0) {
             const enemyIndex = enemies.findIndex((enemy) => {
-                    return projectile.enemy === enemy
-                })
+                return projectile.enemy === enemy
+            })
 
             if (enemyIndex > -1) {
                 enemies.splice(enemyIndex, 1)
                 coins += 25
                 document.querySelector('#coins').innerHTML = coins
-        }
-          }
-          console.log(projectile.enemy.health)
-          building.projectiles.splice(i, 1)
             }
+        }
+        building.projectiles.splice(i, 1)
     }
+}
 })
 }
 const mouse = {
@@ -147,7 +152,10 @@ canvas.addEventListener('click', (event) => {
             })
         )
         activeTile.occupied = true  
-        }
+        buildings.sort((a, b) => {
+            return a.position.y - b.position.y
+        })
+    }
 })
 
 window.addEventListener('mousemove', (event) => {

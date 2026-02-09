@@ -38,14 +38,16 @@ class Sprite {
             this.position.y + this.offset.y, 
             crop.width, 
             crop.height
-        )
+        )  
+    }
     
-    this.frames.elapsed++
+    update() {
+        this.frames.elapsed++
     if (this.frames.elapsed % this.frames.hold === 0) {
     this.frames.current++
     if (this.frames.current >= this.frames.max - 1) {
         this.frames.current = 0
     }
 }
-    }
+}
 }

@@ -20,30 +20,37 @@ class Building extends Sprite {
         }
         this.projectiles = []
        this.radius = 250 
-       this.target = null
-       this.elapsedSpawnTime = 0
+       this.target
     }
 
+draw() {
+    super.draw()
+
+    //c.beginPath()
+    //c.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2)
+    //c.fillStyle = 'rgba(0, 0, 255, .2)'
+    //c.fill()
+}
+
+
     update() {
-        super.draw()
+        this.draw()
+        if (this.target || !this.target && this.frames.current !== 0) 
+            super.update()
 
-         c.beginPath()
-         c.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2)
-         c.fillStyle = 'rgba(0, 0, 255, .2)'
-         c.fill()
+        if (
+            this.target && this.frames.current === 6 && this.frames.elapsed % this.frames.hold === 0) this.shoot()
+    }
 
-        if (this.elapsedSpawnTime % 100 === 0 && this.target) {
+    shoot() {
         this.projectiles.push(
             new Projectile({
                 position: {
-                    x: this.center.x,
-                    y: this.center.y
+                    x: this.center.x - 20,
+                    y: this.center.y - 110
                 },
                 enemy: this.target
             })
         )
-        }
-
-        this.elapsedSpawnTime++
     }
 }
