@@ -107,6 +107,54 @@
         START GAME
     </button>
 </div>
+<div 
+    id="waveDisplay"
+    style="
+        position: absolute; 
+        top: 50%; 
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 96px;
+        color: white;
+        -webkit-text-stroke: 4px black;
+        display: none;
+        pointer-events: none;
+    "
+>
+    ROUND 1
+</div>
+
+<div 
+    id="youWin"
+    style="
+        position: absolute; 
+        top: 0; 
+        bottom: 0; 
+        left: 0; 
+        right: 0; 
+        display: none; 
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.9);
+    "
+>
+    <h1 style="
+        font-size: 96px;
+        color: gold;
+        margin-bottom: 20px;
+        -webkit-text-stroke: 4px black;
+    ">
+        YOU WIN!
+    </h1>
+    <p style="
+        font-size: 48px;
+        color: white;
+        -webkit-text-stroke: 2px black;
+    ">
+        All waves defeated!
+    </p>
+</div>
         <div
         style="
         position: absolute; 

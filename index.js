@@ -1,3 +1,9 @@
+let animationId = null
+function animate() {
+    if (animationId) return
+    animationId = requestAnimationFrame(animate)
+}
+
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
@@ -55,6 +61,8 @@ let activeTile = undefined
 let enemyCount = 3
 let hearts = 10
 let coins = 100
+let currentWave = 1
+const maxWaves = 4
 const explosions = [] 
 spawnEnemies(enemyCount)
 
@@ -134,7 +142,7 @@ for (let i = building.projectiles.length - 1; i >= 0; i--) {
 
             if (enemyIndex > -1) {
                 enemies.splice(enemyIndex, 1)
-                coins += 5
+                coins += 19
                 document.querySelector('#coins').innerHTML = coins
             }
         }
@@ -150,6 +158,31 @@ for (let i = building.projectiles.length - 1; i >= 0; i--) {
     }
 }
 })
+
+// Check if wave is complete
+if (enemies.length === 0 && currentWave <= maxWaves) {
+    currentWave++
+    
+    if (currentWave > maxWaves) {
+        // Player won!
+        cancelAnimationFrame(animationId)
+        document.querySelector('#youWin').style.display = 'flex'
+    } else {
+        const waveDisplay = document.querySelector('#waveDisplay')
+        if (currentWave === maxWaves) {
+            waveDisplay.innerHTML = 'FINAL ROUND'
+        } else {
+            waveDisplay.innerHTML = `ROUND ${currentWave}`
+        }
+        waveDisplay.style.display = 'block'
+        
+        setTimeout(() => {
+            waveDisplay.style.display = 'none'
+            enemyCount += 2
+            spawnEnemies(enemyCount)
+        }, 2000)
+    }
+}
 
 if (enemies.length === 0) {
     enemyCount += 2
@@ -206,4 +239,12 @@ let gameStarted = false
 document.querySelector('#startButton').addEventListener('click', () => {
     gameStarted = true
     document.querySelector('#startScreen').style.display = 'none'
+
+    const waveDisplay = document.querySelector('#waveDisplay')
+    waveDisplay.innerHTML = 'ROUND 1'
+    waveDisplay.style.display = 'block'
+
+    setTimeout(() => {
+        waveDisplay.style.display = 'none'
+    }, 2000)
 })
