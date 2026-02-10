@@ -3,7 +3,7 @@ class PlacementTile {
         this.position = position
         this.size = 64
         this.color = 'rgba(255, 255, 255, .15)'
-        this.occupied = false
+        this.isOccupied = false
     }
 
     draw() {
