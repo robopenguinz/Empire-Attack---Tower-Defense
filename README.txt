@@ -2,7 +2,7 @@
 
 A brower-based tower defense game built with HTML and JavaScript
 
-"In a world where evil remains rampant, the King orders a final attack to reclaim the corrupt land and bring glory to the empire."
+"In a world where evil remains rampant, the king orders a final attack to reclaim the corrupt land and bring glory to the empire."
 
 ## Game Features
 

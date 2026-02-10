@@ -248,3 +248,36 @@ document.querySelector('#startButton').addEventListener('click', () => {
         waveDisplay.style.display = 'none'
     }, 2000)
 })
+
+function restartGame() {
+
+    enemies.length = 0
+    buildings.length = 0
+    explosions.length = 0
+    coins = 100
+    hearts = 10
+    currentWave = 1
+    enemyCount = 3
+    gameStarted = true
+
+    placementTiles.forEach(tile => {
+        tile.occupied = false
+    }   
+    )
+    
+    document.querySelector('#coins').innerHTML = coins
+    document.querySelector('#hearts').innerHTML = hearts
+    document.querySelector('#gameOver').style.display = 'none'
+    document.querySelector('#youWin').style.display = 'none'
+    
+    const waveDisplay = document.querySelector('#waveDisplay')
+    waveDisplay.innerHTML = 'ROUND 1'
+    waveDisplay.style.display = 'block'
+    setTimeout(() => {
+        waveDisplay.style.display = 'none'
+        spawnEnemies(enemyCount)
+    }, 2000)
+}
+
+document.querySelector('#tryAgainLose').addEventListener('click', restartGame)
+document.querySelector('#tryAgainWin').addEventListener('click', restartGame)
