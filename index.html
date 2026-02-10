@@ -17,15 +17,45 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 1280px;
+            height: 768px;
+            max-width: 100vw;
+            max-height: 100vh;
         }
         
         canvas {
             display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
+
+        @media (max-aspect-ratio: 1280/768) {
+            #gameContainer {
+                width: 100vw;
+                height: calc(100vw * 768 / 1280);
+            }
+        }
+
+         @media (min-aspect-ratio: 1280/768) {
+            #gameContainer {
+                width: calc(100vh * 1280 / 768);
+                height: 100vh;
+            }
+        }    
+
     </style>
 </head>
 <body>
-    <div style="position: relative; width: 1280px; height: 768px;">
+    <div id="gameContainer">
     <canvas></canvas>
     <div 
     id="gameOver"
@@ -39,9 +69,9 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 72px;
+        font-size: 5.6vmin;
         color: white;
-        -webkit-text-stroke: 3px black;
+        -webkit-text-stroke: 0.23vmin black;
     "
 >
     GAME OVER
@@ -49,15 +79,15 @@
         id="tryAgainLose"
         style="
             font-family: 'Changa One', cursive;
-            font-size: 36px;
-            padding: 20px 60px;
-            margin-top: 30px;
+            font-size: 2.8vmin;
+            padding: 1.5vmin 4.6vmin;
+            margin-top: 2.3vmin;
             background: linear-gradient(to bottom, #f44336, #c62828);
             color: white;
-            border: 4px solid white;
-            border-radius: 10px;
+            border: 0.3vmin solid white;
+            border-radius: 0.78vmin;
             cursor: pointer;
-            -webkit-text-stroke: 1px black;
+            -webkit-text-stroke: 0.08vmin black;
         "
     >
         TRY AGAIN
@@ -95,16 +125,16 @@
     "
 >
     <h1 style="
-        font-size: 72px;
-        margin-bottom: 20px;
-        -webkit-text-stroke: 3px black;
+        font-size: 5.6vmin;
+        margin-bottom: 1.5vmin;
+        -webkit-text-stroke: 0.23vmin black;
     ">
         Empire Attacks
     </h1>
     <h2 style="
-        font-size: 48px;
-        margin-bottom: 40px;
-        -webkit-text-stroke: 2px black;
+        font-size: 3.75vmin;
+        margin-bottom: 3.1vmin;
+        -webkit-text-stroke: 0.15vmin black;
     ">
         Tower Defense
     </h2>
@@ -112,14 +142,14 @@
         id="startButton"
         style="
             font-family: 'Changa One', cursive;
-            font-size: 36px;
-            padding: 20px 60px;
+            font-size: 2.8vmin;
+            padding: 1.5vmin 4.6vmin;
             background: linear-gradient(to bottom, #4CAF50, #2E7D32);
             color: white;
-            border: 4px solid white;
-            border-radius: 10px;
+            border: 0.3vmin solid white;
+            border-radius: 0.78vmin;
             cursor: pointer;
-            -webkit-text-stroke: 1px black;
+            -webkit-text-stroke: 0.08vmin black;
         "
     >
         START GAME
@@ -132,9 +162,9 @@
         top: 50%; 
         left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 96px;
+        font-size: 7.5vmin;
         color: white;
-        -webkit-text-stroke: 4px black;
+        -webkit-text-stroke: 0.31vmin black;
         display: none;
         pointer-events: none;
     "
@@ -158,18 +188,18 @@
     "
 >
     <h1 style="
-        font-size: 96px;
+        font-size: 7.5vmin;
         color: gold;
-        margin-bottom: 20px;
-        -webkit-text-stroke: 4px black;
+        margin-bottom: 1.5vmin;
+        -webkit-text-stroke: 0.31vmin black;
     ">
         YOU WIN!
     </h1>
     <p style="
-        font-size: 48px;
+        font-size: 3.75vmin;
         color: white;
-        margin-bottom: 30px;
-        -webkit-text-stroke: 2px black;
+        margin-bottom: 2.3vmin;
+        -webkit-text-stroke: 0.15vmin black;
     ">
         All waves defeated!
     </p>
@@ -177,12 +207,12 @@
         id="tryAgainWin"
         style="
             font-family: 'Changa One', cursive;
-            font-size: 36px;
-            padding: 20px 60px;
+            font-size: 2.8vmin;
+            padding: 1.5vmin 4.6vmin;
             background: linear-gradient(to bottom, #4CAF50, #2E7D32);
             color: white;
-            border: 4px solid white;
-            border-radius: 10px;
+            border: 0.3vmin solid white;
+            border-radius: 0.78vmin;
             cursor: pointer;
             -webkit-text-stroke: 1px black;
         "
@@ -193,18 +223,18 @@
         <div
         style="
         position: absolute; 
-        top: 4px; 
-        right:8px; 
+        top: 0.5%; 
+        right:0.6%; 
         color:white; 
-        font-size: 36px; 
-        -webkit-text-stroke: 2px black;
+        font-size: 2.8vmin; 
+        -webkit-text-stroke: 0.15vmin black;
         display: flex;
         align-items: center;
         "
         >
-        <div style="display: flex; align-items: center; margin-right: 10px">
+        <div style="display: flex; align-items: center; margin-right: 0.78vmin">
         <svg 
-        style="width: 25px; color: gold; margin-right: 4px;"
+        style="width: 1.95vmin; color: gold; margin-right: 0.31vmin;"
         xmlns="http://www.w3.org/2000/svg" 
         viewBox="0 0 512 512"
         fill="currentColor"
@@ -218,7 +248,7 @@
     <!-- hearts -->
     <div style="display: flex; align-items: center">
         <svg
-        style="width: 25px; color: red; margin-right: 5px;"
+        style="width: 1.95vmin; color: red; margin-right: 0.39vmin;"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="currentColor"

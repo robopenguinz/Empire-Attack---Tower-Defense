@@ -220,8 +220,12 @@ canvas.addEventListener('click', (event) => {
 })
 
 window.addEventListener('mousemove', (event) => {
-    mouse.x = event.clientX
-    mouse.y = event.clientY
+   const rect = canvas.getBoundingClientRect()
+   const scaleX = canvas.width / rect.width
+   const scaleY = canvas.height / rect.height
+
+   mouse.x = (event.clientX - rect.left) * scaleX
+   mouse.y = (event.clientY - rect.top) * scaleY
     
     activeTile = null
     for (let i = 0; i < placementTiles.length; i++) {
