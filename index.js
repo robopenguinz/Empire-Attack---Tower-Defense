@@ -126,6 +126,13 @@ function animate() {
                 building.width,
                 building.height
             )
+            c.fillStyle = 'white'
+            c.font = 'bold 20px "Changa One"'
+            c.textAlign = 'center'
+            c.strokeStyle = 'black'
+            c.lineWidth = 3
+            c.strokeText('Level 1 Rock Launcher', building.center.x, building.y - 10)
+            c.fillText('Level 1 Rock Launcher', building.center.x, building.position.y - 10)
         }
 
         for (let i = building.projectiles.length - 1; i >= 0; i--) {
