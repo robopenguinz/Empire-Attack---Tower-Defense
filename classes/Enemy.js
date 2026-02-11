@@ -16,12 +16,13 @@ class Enemy extends Sprite{
             y: this.position.y + this.height / 2
         }
         this.radius = 50
-        this.health = 100
+        this.speed = speed
+
+        this.health = Math.round(100 + (3.5 - speed) * 30)
         this.velocity = {
             x: 0,
             y: 0
         }
-        this.speed = speed
     }
 
     draw() {

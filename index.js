@@ -2,8 +2,10 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
 const TOWER_COST = 50;
+const UPGRADE_COSTS = [75, 100];
 const SELL_REFUND_Percent = 0.5;
 let hoveredBuildingForSell = null;
+let selectedBuilding = null;
 
 canvas.width = 1280
 canvas.height = 768
@@ -135,8 +137,22 @@ function animate() {
             c.textAlign = 'center'
             c.strokeStyle = 'black'
             c.lineWidth = 3
-            c.strokeText('Level 1 Rock Launcher', building.center.x, building.y - 10)
-            c.fillText('Level 1 Rock Launcher', building.center.x, building.position.y - 10)
+
+            const towerName = `Level ${building.level} Rock Launcher`
+            c.strokeText(towerName, building.center.x, building.y - 30)
+            c.fillText(towerName, building.center.x, building.position.y - 30)
+
+            if (building.level < 3) {
+                const upgradeCost = `Upgrade: ${building.getUpgradeCost()} coins`
+                c.font = 'bold 16px "Changa One"'
+                c.strokeText(upgradeCost, building.center.x, building.position.y - 10)
+                c.fillText(upgradeCost, building.center.x, building.position.y - 10)
+            } else {
+                c.font = 'bold 16px "Changa One"'
+                c.fillStyle = 'gold'
+                c.strokeText('MAX LEVEL', building.center.x, building.position.y - 10)
+                c.fillText('MAX LEVEL', building.center.x, building.position.y - 10)
+            }
         }
 
         for (let i = building.projectiles.length - 1; i >= 0; i--) {
@@ -154,7 +170,7 @@ function animate() {
             const distance = Math.hypot(xDifference, yDifference)
             
             if (distance < projectile.enemy.radius + projectile.radius) {
-                projectile.enemy.health -= 20
+                projectile.enemy.health -= projectile.damage
                 if (projectile.enemy.health <= 0) {
                     const enemyIndex = enemies.findIndex((enemy) => {
                         return projectile.enemy === enemy
@@ -162,7 +178,7 @@ function animate() {
 
                     if (enemyIndex > -1) {
                         enemies.splice(enemyIndex, 1)
-                        coins += 19
+                        coins += 15
                         document.querySelector('#coins').innerHTML = coins
                     }
                 }
@@ -198,8 +214,12 @@ function animate() {
             
             setTimeout(() => {
                 waveDisplay.style.display = 'none'
-                enemyCount += 2
-                spawnEnemies(enemyCount)
+                if (currentWave == maxWaves) {
+                    spawnEnemies(enemyCount * 5) 
+                } else {
+                    enemyCount += 2
+                    spawnEnemies(enemyCount)
+                }
                 waveStarted = true
             }, 2000)
         }
@@ -213,7 +233,11 @@ const mouse = {
 
 canvas.addEventListener('click', (event) => {
     if (hoveredBuildingForSell) {
-        sellTower(hoveredBuildingForSell);
+        if (event.shiftKey) {
+             sellTower(hoveredBuildingForSell)
+        } else {
+             upgradeTower(hoveredBuildingForSell);
+        }
         return;
     }
 
@@ -344,6 +368,24 @@ function sellTower(building) {
     coins += refund;
     document.querySelector('#coins').innerHTML = coins;
 }    
+
+function upgradeTower(building) {
+    const upgradeCost = building.getUpgradeCost();
+
+    if (building.level >= 3) {
+        console.log('Tower is already max level!');
+        return;
+    }
+
+    if (coins >= upgradeCost) {
+        coins -= upgradeCost;
+        building.upgrade();
+        document.querySelector('#coins').innerHTML = coins;
+        console.log(`Upgraded to level ${building.level}!`);
+    } else {
+        console.log(`Need ${upgradeCost - coins} more coins to upgrade!`);
+    }
+}
 
 document.querySelector('#tryAgainLose').addEventListener('click', restartGame)
 document.querySelector('#tryAgainWin').addEventListener('click', restartGame)

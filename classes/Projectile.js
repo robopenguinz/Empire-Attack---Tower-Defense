@@ -1,5 +1,5 @@
 class Projectile extends Sprite {
-    constructor({position = {x:0, y:0}, enemy}) {
+    constructor({position = {x:0, y:0}, enemy, damage = 20}) {
         super({ position, imageSrc: 'img/projectile.png' })
         this.velocity = {
         x: 0,
@@ -7,6 +7,7 @@ class Projectile extends Sprite {
     }
     this.enemy = enemy
     this.radius = 10
+    this.damage = damage
 }
 
 update() {

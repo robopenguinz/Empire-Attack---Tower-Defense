@@ -19,21 +19,47 @@ class Building extends Sprite {
             y: this.position.y + this.height / 2
         }
         this.projectiles = []
-       this.radius = 250 
-       this.target
+        this.level = 1
+        this.updateStats()
     }
+
+updateStats() {
+
+    if (this.level === 1) {
+        this.radius = 250
+        this.damage = 20
+        this.fireRate = 3
+    } else if (this.level === 2) {
+        this.radius = 300
+        this.damage = 30
+        this.fireRate = 2
+    } else if (this.level === 3) {
+        this.radius = 350
+        this.damage = 40
+        this.fireRate = 1
+    }
+
+    this.frames.hold = this.fireRate
+}
+
+upgrade() {
+    if (this.level < 3) {
+        this.level++
+        this.updateStats()
+        return true
+    }
+    return false
+}
+
+getUpgradeCost() {
+    if (this.level === 1) return 75
+    if (this.level === 2) return 100
+    return 0
+}
 
 draw() {
     super.draw()
-
-    if (this == hoveredBuildingForSell) {
-        c.beginPath()
-        c.arc(this.center, this.center.y, this.radius, 0, Math.PI * 2)
-        c.fillStyle = 'rgba( 0, 0, 255, 0.2)'
-        c.fill()
-    }
 }
-
 
     update() {
         this.draw()
@@ -51,7 +77,8 @@ draw() {
                     x: this.center.x - 20,
                     y: this.center.y - 110
                 },
-                enemy: this.target
+                enemy: this.target,
+                damage: this.damage
             })
         )
     }
