@@ -113,6 +113,11 @@ function animate() {
         building.target = validEnemies[0]
 
         if (building === hoveredBuildingForSell) {
+           c.beginPath()
+           c.arc(building.center.x, building.center.y, building.radius, 0, Math.PI * 2)
+           c.fillStyle = 'rgba(0, 0, 255, 0.2)'
+           c.fill()
+            
             c.strokeStyle = 'red';
             c.lineWidth = 3;
             c.strokeRect(
@@ -293,7 +298,7 @@ function restartGame() {
     hearts = 10
     currentWave = 1
     enemyCount = 3
-    gameStarted = true
+    gameStarted = false
     waveStarted = false
 
     placementTiles.forEach(tile => {
@@ -304,19 +309,9 @@ function restartGame() {
     document.querySelector('#hearts').innerHTML = hearts
     document.querySelector('#gameOver').style.display = 'none'
     document.querySelector('#youWin').style.display = 'none'
+    document.querySelector('#startScreen').style.display = 'flex'
     
-    const waveDisplay = document.querySelector('#waveDisplay')
-    waveDisplay.innerHTML = 'ROUND 1'
-    waveDisplay.style.display = 'block'
-    
-    // Restart the animation loop since it was cancelled
     animate()
-    
-    setTimeout(() => {
-        waveDisplay.style.display = 'none'
-        spawnEnemies(enemyCount)
-        waveStarted = true
-    }, 2000)
 }
 
 function sellTower(building) {
