@@ -45,9 +45,13 @@ const enemies = []
 function spawnEnemies(spawnCount) {
     for (let i = 1; i < spawnCount + 1; i++) {
         const xOffset = i * 150 
+
+        const randomSpeed = Math.random() * 3 + 2
+
         enemies.push(
             new Enemy({
-                position: {x: waypoints[0].x - xOffset, y: waypoints[0].y}
+                position: {x: waypoints[0].x - xOffset, y: waypoints[0].y},
+                speed: randomSpeed
             })
         ) 
     }
