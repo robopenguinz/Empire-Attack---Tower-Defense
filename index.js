@@ -2,10 +2,17 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
 const TOWER_COST = 50;
+const Tower_COSTS = {
+    rock : 50,
+    sniper: 75,
+    rapid: 40
+}
+
 const UPGRADE_COSTS = [75, 100];
 const SELL_REFUND_Percent = 0.5;
 let hoveredBuildingForSell = null;
 let selectedBuilding = null;
+let selectedBuildingType = 'rock';
 
 canvas.width = 1280
 canvas.height = 768
@@ -121,7 +128,7 @@ function animate() {
         if (building === hoveredBuildingForSell) {
            c.beginPath()
            c.arc(building.center.x, building.center.y, building.radius, 0, Math.PI * 2)
-           c.fillStyle = 'rgba(0, 0, 255, 0.2)'
+           c.fillStyle = building.color
            c.fill()
             
             c.strokeStyle = 'red';
@@ -138,7 +145,7 @@ function animate() {
             c.strokeStyle = 'black'
             c.lineWidth = 3
 
-            const towerName = `Level ${building.level} Rock Launcher`
+            const towerName = `Level ${building.level} ${building.name}`
             c.strokeText(towerName, building.center.x, building.y - 30)
             c.fillText(towerName, building.center.x, building.position.y - 30)
 
@@ -241,15 +248,16 @@ canvas.addEventListener('click', (event) => {
         return;
     }
 
-    if (activeTile && !activeTile.isOccupied && coins - 50 >= 0) {  
-        coins -= 50
+    if (activeTile && !activeTile.isOccupied && coins >= TOWER_COSTS[selectedTowerType]) {  
+        coins -= TOWER_COSTS[selectedTowerType]
         document.querySelector('#coins').innerHTML = coins
         buildings.push(
             new Building ({
                 position: {
                     x: activeTile.position.x,
                     y: activeTile.position.y
-                }
+                },
+                type: selectedTowerType
             })
         )
         activeTile.isOccupied = true  
@@ -313,6 +321,7 @@ let gameStarted = false
 document.querySelector('#startButton').addEventListener('click', () => {
     gameStarted = true
     document.querySelector('#startScreen').style.display = 'none'
+    document.querySelector('#towerMenu').style.display = 'flex'
 
     const waveDisplay = document.querySelector('#waveDisplay')
     waveDisplay.innerHTML = 'ROUND 1'
@@ -335,6 +344,7 @@ function restartGame() {
     enemyCount = 3
     gameStarted = false
     waveStarted = false
+    selectedTowerType = 'rock'
 
     placementTiles.forEach(tile => {
         tile.isOccupied = false
@@ -345,6 +355,7 @@ function restartGame() {
     document.querySelector('#gameOver').style.display = 'none'
     document.querySelector('#youWin').style.display = 'none'
     document.querySelector('#startScreen').style.display = 'flex'
+    document.querySelector('#towerMenu').style.display = 'none'
     
     animate()
 }
@@ -386,6 +397,17 @@ function upgradeTower(building) {
         console.log(`Need ${upgradeCost - coins} more coins to upgrade!`);
     }
 }
+
+document.querySelectorAll('.tower-options').forEach(option => {
+    option.addEventListener('click', () => {
+        selectedTowerType = option.dataset.type;
+
+        document.querySelectorAll('tower-options').forEach(opt => {
+            opt.style.border = '3px solid rgba(255,255,255,0.3)';
+    });
+    option.style.border = '3px solid white';
+});
+});
 
 document.querySelector('#tryAgainLose').addEventListener('click', restartGame)
 document.querySelector('#tryAgainWin').addEventListener('click', restartGame)

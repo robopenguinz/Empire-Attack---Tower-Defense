@@ -1,5 +1,5 @@
 class Building extends Sprite {
-    constructor({position = {x: 0, y: 0}}) {
+    constructor({position = {x: 0, y: 0}, type = 'rock'}) {
         super({
             position, 
             imageSrc: './img/tower.png', 
@@ -25,6 +25,9 @@ class Building extends Sprite {
 
 updateStats() {
 
+    if (this.type === 'rock') {
+        this.name = 'Rock Launcher'
+        this.color = 'rgba(0, 0, 255, 0.2)'
     if (this.level === 1) {
         this.radius = 250
         this.damage = 20
@@ -38,7 +41,39 @@ updateStats() {
         this.damage = 40
         this.fireRate = 1
     }
-
+} else if (this.type === 'sniper') {
+    this.name = 'Sniper Tower'
+    this.color = 'rgba(255, 0, 0, 0.2)'
+    if (this.level === 1) {
+        this.radius = 400
+        this.damage = 50
+        this.fireRate = 8
+    } else if (this.level === 2) {
+        this.radius = 450
+        this.damage = 75
+        this.fireRate = 6
+    } else if (this.level === 3) {
+        this.radius = 500
+        this.damage = 100
+        this.fireRate = 4
+    } 
+} else if (this.type === 'rapid') {
+    this.name = 'Rapid Fire'
+    this.color = 'rgba(0, 255, 0, 0.2)'
+    if (this.level === 1) {
+        this.radius = 180
+        this.damage = 8
+        this.fireRate = 1
+    } else if (this.level === 2) {
+        this.radius = 220
+        this.damage = 12
+        this.fireRate = 1
+    } else if (this.level === 3) {
+        this.radius = 260
+        this.damage = 16
+        this.fireRate = 1
+    }
+}
     this.frames.hold = this.fireRate
 }
 
@@ -67,7 +102,8 @@ draw() {
             super.update()
 
         if (
-            this.target && this.frames.current === 6 && this.frames.elapsed % this.frames.hold === 0) this.shoot()
+            this.target && this.frames.current === 6 && this.frames.elapsed % this.frames.hold === 0) 
+            this.shoot()
     }
 
     shoot() {
