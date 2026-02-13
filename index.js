@@ -2,7 +2,7 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
 const TOWER_COST = 50;
-const Tower_COSTS = {
+const TOWER_COSTS = {
     rock : 50,
     sniper: 75,
     rapid: 40
@@ -357,6 +357,11 @@ function restartGame() {
     document.querySelector('#startScreen').style.display = 'flex'
     document.querySelector('#towerMenu').style.display = 'none'
     
+    document.querySelectorAll('.tower-option').forEach(opt => {
+        opt.style.border = '3px solid rgba(255,255,255,0.3)';
+    });
+    document.querySelector('[data-type="rock"]').style.border = '3px solid white';
+    
     animate()
 }
 
@@ -398,15 +403,15 @@ function upgradeTower(building) {
     }
 }
 
-document.querySelectorAll('.tower-options').forEach(option => {
+document.querySelectorAll('.tower-option').forEach(option => {
     option.addEventListener('click', () => {
         selectedTowerType = option.dataset.type;
 
-        document.querySelectorAll('tower-options').forEach(opt => {
+        document.querySelectorAll('.tower-option').forEach(opt => {
             opt.style.border = '3px solid rgba(255,255,255,0.3)';
+        });
+        option.style.border = '3px solid white';
     });
-    option.style.border = '3px solid white';
-});
 });
 
 document.querySelector('#tryAgainLose').addEventListener('click', restartGame)
