@@ -12,7 +12,7 @@ const UPGRADE_COSTS = [75, 100];
 const SELL_REFUND_Percent = 0.5;
 let hoveredBuildingForSell = null;
 let selectedBuilding = null;
-let selectedBuildingType = 'rock';
+let selectedTowerType = 'rock';
 
 canvas.width = 1280
 canvas.height = 768
@@ -55,14 +55,39 @@ function spawnEnemies(spawnCount) {
     for (let i = 1; i < spawnCount + 1; i++) {
         const xOffset = i * 150 
 
-        const randomSpeed = Math.random() * 3 + 2
+        let enemyType
+        let ememySpeed
+
+        const typeRoll = Math.random()
+        if (typeRoll < 0.7) {
+            enemyType = 'tank'
+            enemySpeed = Math.random() * 1.5 + 2
+        } else if (typeRoll < 0.95) {
+            enemyType = 'scout'
+            enemySpeed = Math.random() * 2 + 4
+        } else {
+            enemyType = 'boss'
+            enemySpeed = 3
+        }
 
         enemies.push(
             new Enemy({
                 position: {x: waypoints[0].x - xOffset, y: waypoints[0].y},
-                speed: randomSpeed
+                speed: enemySpeed,
+                type: enemyType
             })
         ) 
+    }
+
+    const hasBoss = enemies.some(enemy => enemy.type === 'boss')
+    if (!hasBoss && spawnCount > 2) {
+        enemies.push (
+            new Enemy({
+                position: {x: waypoints[0].x - (spawnCount + 1) * 150, y: waypoints[0].y},
+                speed: 3,
+                type: 'boss'
+            })
+        )
     }
 }
 
@@ -146,7 +171,7 @@ function animate() {
             c.lineWidth = 3
 
             const towerName = `Level ${building.level} ${building.name}`
-            c.strokeText(towerName, building.center.x, building.y - 30)
+            c.strokeText(towerName, building.center.x, building.position.y - 30)
             c.fillText(towerName, building.center.x, building.position.y - 30)
 
             if (building.level < 3) {
@@ -177,18 +202,25 @@ function animate() {
             const distance = Math.hypot(xDifference, yDifference)
             
             if (distance < projectile.enemy.radius + projectile.radius) {
-                projectile.enemy.health -= projectile.damage
-                if (projectile.enemy.health <= 0) {
-                    const enemyIndex = enemies.findIndex((enemy) => {
-                        return projectile.enemy === enemy
-                    })
+                const hit = projectile.enemy.takeDamage(projectile.damage)
 
-                    if (enemyIndex > -1) {
-                        enemies.splice(enemyIndex, 1)
-                        coins += 15
-                        document.querySelector('#coins').innerHTML = coins
-                    }
+                if (!hit) {
+                    building.projectile.splice(i, 1)
+                    continue
                 }
+            
+            if (projectile.enemy.health <= 0) {
+                const enemyIndex = enemies.findIndex((enemy) =>{
+                    return projectile.enemy === enemy
+                })
+
+                if (enemyIndex > -1) {
+                    enemies.splice(enemyIndex, 1)
+                    coins += projectile.enemy.coinValue
+                    document.querySelector('#coins').innerHTML = coins
+                }
+            }
+
                 explosions.push(
                     new Sprite({
                         position: {x: projectile.position.x, y: projectile.position.y}, 

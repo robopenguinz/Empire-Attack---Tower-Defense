@@ -1,8 +1,13 @@
 class Enemy extends Sprite{
-    constructor({position = {x:0, y:0}, speed = 3}) {
+    constructor({position = {x:0, y:0}, speed = 3, type = 'tank'}) {
+        //Different sprites for different types
+        let imageSrc = 'img/orc.png'
+        if (type === 'scout') imageSrc = 'img/orc.png'
+        if (type === 'boss') imageSrc = 'img/orc.png'
+
         super({ 
             position, 
-            imageSrc: 'img/orc.png', 
+            imageSrc: imageSrc, 
             frames: {
                 max: 7
             }
@@ -15,18 +20,56 @@ class Enemy extends Sprite{
             x: this.position.x + this.width / 2,
             y: this.position.y + this.height / 2
         }
-        this.radius = 50
+        this.type = type
         this.speed = speed
 
-        this.health = Math.round(100 + (3.5 - speed) * 30)
+        // Stats based on type
+        if (type === 'tank') {
+            this.radius = 50
+            this.health = Math.round(100 + (3.5 - speed) * 30)
+            this.maxHealth = this.health
+            this.color = 'rgba(255, 0, 0, 0.3)'
+            this.coinValue = 50
+        } else if (type === 'scout') {
+            this.radius = 45
+            this.health = 50
+            this.maxHealth = 50
+            this.color = 'rgba(0, 100, 255, 0.3)'
+            this.dodgeChance = 0.2
+            this.coinValue = 25
+        } else if (type === 'boss') {
+            this.radius = 70
+            this.health = 300
+            this.maxHealth = 300
+            this.shield = 150
+            this.maxShield = 150
+            this.color = 'rgba(150, 0, 255, 0.3)'
+            this.regenRate = 0.5
+            this.coinValue = 100
+        }
+
         this.velocity = {
-            x: 0,
+            x:0,
             y: 0
         }
+        
     }
 
     draw() {
+        c.save()
+        c.globalAlpha = 0.5
+        c.fillStyle = this.color
+        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.restore()
+
         super.draw()
+
+        if (this.type === 'boss' && this.shield > 0) {
+            c.fillStyle = 'cyan'
+            c.fillRect(this.position.x, this.position.y - 30, this.width, 8)
+            c.fillStyle = 'blue'
+            c.fillRect(this.position.x, this.position.y - 30, this.width * (this.shield / this.maxShield), 8)
+        }
 
         //health bar
         c.fillStyle = 'red'
@@ -34,11 +77,26 @@ class Enemy extends Sprite{
     
         c.fillStyle = 'green'
         c.fillRect(this.position.x, this.position.y - 15, this.width * this.health / 100, 10)
+
+        //label for boss
+        if (this.type === 'boss') {
+            c.fillStyle = 'white'
+            c.font = 'bold 12px Arial'
+            c.textAlign = 'center'
+            c.strokeStyle = 'black'
+            c.lineWidth = 3
+            c.strokeText('BOSS', this.position.x + this.width / 2, this.position.y - 35)
+            c.fillText('BOSS', this.position.x + this.width / 2, this.position.y - 35)
+        }
     }
 
     update() {
         this.draw()
         super.update()
+
+        if (this.type === 'boss' && this.health < this.maxHealth && this.health > 0) {
+            this.health = Math.min(this.health + this.regenRate, this.maxHealth)
+        }
        
         const waypoint = waypoints[this.waypointIndex]
         const yDistance = waypoint.y - this.center.y
@@ -66,4 +124,22 @@ class Enemy extends Sprite{
             this.waypointIndex++
         }
     }
+
+takeDamage(damage) {
+    if (this.type === 'scout' && Math.random() < this.dodgeChance) {
+        // dodge indicator
+        return false 
+    }
+
+    if (this.type === 'boss' && this.shield > 0) {
+        this.shield -= damage
+        if (this.shield < 0) {
+            this.health += this.shield
+            this.shield = 0
+        }
+    } else {
+        this.health -= damage
+    }
+    return true
+}
 }

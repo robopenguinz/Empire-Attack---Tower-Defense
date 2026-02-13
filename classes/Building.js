@@ -19,6 +19,7 @@ class Building extends Sprite {
             y: this.position.y + this.height / 2
         }
         this.projectiles = []
+        this.type = type
         this.level = 1
         this.updateStats()
     }
