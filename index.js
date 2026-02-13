@@ -202,6 +202,11 @@ function animate() {
             const distance = Math.hypot(xDifference, yDifference)
             
             if (distance < projectile.enemy.radius + projectile.radius) {
+
+                if (projectile.isPiercing && projectile.hasHit.includes(projectile.enemy)) {
+                    continue
+                }
+
                 const hit = projectile.enemy.takeDamage(projectile.damage)
 
                 if (!hit) {
@@ -209,6 +214,43 @@ function animate() {
                     continue
                 }
             
+                //Chain effect
+                if (projectile.isChainLightning) {
+                     
+                    //Find 2 nearest enemies
+                    const nearbyEnemies = enemies
+                        .filter(e => e !== projectile.enemy && e.health > 0)
+                        .sort((a, b)) => {
+                            const distA = Math.hypot(a.center.x - projectile.enemy.center.x, a.center.y - projectile.enemy.center.y)
+                            const distB = Math.hypot(b.center.x - projectile.enemy.center.x, b.center.y - projectile.enemy.center.y)
+                            return distA - distB
+                        })
+                    .slice(0, 2)
+
+                    nearbyEnemies.forEach(enemy => {
+                        c.save()
+                        c.strokeStyle = 'cyan'
+                        c.lineWidth = 3
+                        c.beginPath()
+                        c.moveTo(projectile.enemy.center.x, projectile.enemy.center.y)
+                        c.lineTo(enemy.center.x, enemy.center.y)
+                        c.lineTo(enemy.center.x, enemy.center.y)
+                        c.stroke()
+                        c.restore()
+
+                        enemy.takeDamage(15)
+
+                        if (enemy.health <= 0) {
+                            const enemyIndex = enemies.indexOf(enemy)
+                            if (enemyIndex > -1) {
+                                enemies.splice(enemyIndex, 1)
+                                coins += enemy.coinValue
+                                document.querySelector('#coins').innerHTML = coins
+                            }
+                        }
+                    })
+                }
+        
             if (projectile.enemy.health <= 0) {
                 const enemyIndex = enemies.findIndex((enemy) =>{
                     return projectile.enemy === enemy

@@ -8,6 +8,10 @@ class Projectile extends Sprite {
     this.enemy = enemy
     this.radius = 10
     this.damage = damage
+    this.isChainLightning = isChainLightning
+    this.isPiercing = this.isPiercing
+    this.source = source
+    this.hasHit = []
 }
 
 update() {
@@ -29,5 +33,25 @@ update() {
 
     this.position.x += this.velocity.x
     this.position.y += this.velocity.y
+
+    if (this.isChainLightning) {
+        c.save()
+        c.strokeStyle = 'cyan'
+        c.lineWidth = 2
+        c.beginPath()
+        c.arc(this.position.x, this.position.y, 15, 0, Math.PI * 2)
+        c.stroke()
+        c.restore()
+    }
+
+    if (this.isPiercing) {
+        c.save()
+        c.strokeStyle = 'yellow'
+        c.lineWidth = 3
+        c.beginPath()
+        c.arc(this.position.x, this.position.y, 12, 0, Math.PI * 2)
+        c.stroke()
+        c.restore()
+    }
 }
 }

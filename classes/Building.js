@@ -21,11 +21,15 @@ class Building extends Sprite {
         this.projectiles = []
         this.type = type
         this.level = 1
+
+        this.shotsFired = 0
+        this.ultimateCooldown = 0
+
         this.updateStats()
     }
 
 updateStats() {
-
+    // base stats by tower type
     if (this.type === 'rock') {
         this.name = 'Rock Launcher'
         this.color = 'rgba(0, 0, 255, 0.2)'
@@ -41,6 +45,7 @@ updateStats() {
         this.radius = 350
         this.damage = 40
         this.fireRate = 1
+        this.ultimateAbility = 'chain_lightning'
     }
 } else if (this.type === 'sniper') {
     this.name = 'Sniper Tower'
@@ -57,6 +62,7 @@ updateStats() {
         this.radius = 500
         this.damage = 100
         this.fireRate = 4
+        this.ultimateAbility = 'piercing_shot'
     } 
 } else if (this.type === 'rapid') {
     this.name = 'Rapid Fire'
@@ -73,6 +79,7 @@ updateStats() {
         this.radius = 260
         this.damage = 16
         this.fireRate = 1
+        this.ultimateAbility = 'bullet_storm'
     }
 }
     this.frames.hold = this.fireRate
@@ -95,10 +102,28 @@ getUpgradeCost() {
 
 draw() {
     super.draw()
+
+    //Max level glow effect
+    if (this.level === 3) {
+        c.save()
+        c.globalAlpha = 0.3
+        c.beginPath()
+        c.arc(this.center.x, this.center.y, 40, 0, Math.PI * 2)
+        if (this.type === 'rock') c.fillStyle ='blue'
+        if (this.type === 'sniper') c.fillStyle = 'red'
+        if (this.type === 'rapid') c.fillStyle = 'green'
+        c.fill()
+        c.restore()
+    }
 }
 
     update() {
         this.draw()
+
+        if (this.ultimateAbility > 0) {
+            this.ultimateCooldown--
+        }
+
         if (this.target || !this.target && this.frames.current !== 0) 
             super.update()
 
@@ -108,6 +133,10 @@ draw() {
     }
 
     shoot() {
+        this.shotsFired++
+
+        const isChainLightning = this.level === 3 && this.type === 'rock' && this.shotsFired % 5 === 0
+
         this.projectiles.push(
             new Projectile({
                 position: {
@@ -115,8 +144,30 @@ draw() {
                     y: this.center.y - 110
                 },
                 enemy: this.target,
-                damage: this.damage
+                damage: this.damage,
+                isChainLightning: isChainLightning,
+                isPiercing: this.level === 3 && this.type === 'sniper',
+                source: this
             })
         )
+    }
+
+    bulletStorm() {
+        //Fires 10 shots fast 
+        for (let i = 0; i < 10; i++) {
+            if (this.target) {
+                this.projectiles.push(
+                    new Projectile({
+                        position: {
+                            x: this.center.x - 20 + (Math.random() - 0.5) * 20,
+                            y: this.center.y - 110 + (Math.random() - 0.5) * 20
+                        },
+                        enemy: this.target,
+                        damage: this.damage,
+                        source: this
+                    })
+                )
+            }
+        }  
     }
 }
