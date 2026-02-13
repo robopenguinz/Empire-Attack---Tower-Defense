@@ -56,7 +56,7 @@ function spawnEnemies(spawnCount) {
         const xOffset = i * 150 
 
         let enemyType
-        let ememySpeed
+        let enemySpeed
 
         const typeRoll = Math.random()
         if (typeRoll < 0.7) {
@@ -210,7 +210,7 @@ function animate() {
                 const hit = projectile.enemy.takeDamage(projectile.damage)
 
                 if (!hit) {
-                    building.projectile.splice(i, 1)
+                    building.projectiles.splice(i, 1)
                     continue
                 }
             
@@ -220,7 +220,7 @@ function animate() {
                     //Find 2 nearest enemies
                     const nearbyEnemies = enemies
                         .filter(e => e !== projectile.enemy && e.health > 0)
-                        .sort((a, b)) => {
+                        .sort((a, b) => {
                             const distA = Math.hypot(a.center.x - projectile.enemy.center.x, a.center.y - projectile.enemy.center.y)
                             const distB = Math.hypot(b.center.x - projectile.enemy.center.x, b.center.y - projectile.enemy.center.y)
                             return distA - distB
@@ -233,7 +233,6 @@ function animate() {
                         c.lineWidth = 3
                         c.beginPath()
                         c.moveTo(projectile.enemy.center.x, projectile.enemy.center.y)
-                        c.lineTo(enemy.center.x, enemy.center.y)
                         c.lineTo(enemy.center.x, enemy.center.y)
                         c.stroke()
                         c.restore()
@@ -271,11 +270,26 @@ function animate() {
                         offset: {x: 0, y: 0} 
                     })
                 )
-                building.projectiles.splice(i, 1)
-            }
-        }
-    })
+      if (projectile.isPiercing) {
+        projectile.hasHit.push(projectile.enemy)
 
+        const nextEnemy = enemies.find(e =>
+            !projectile.hasHit.includes(e) &&
+            e.health > 0 &&
+            Math.hypot(e.center.x - projectile.position.x, e.center.y - projectile.position.y) < 300
+        )
+
+        if (nextEnemy && projectile.hasHit.length < 3) {
+            projectile.enemy = nextEnemy
+        } else {
+            building.projectiles.splice(i, 1)
+        }
+      } else {
+        building.projectiles.splice(i, 1)
+      }
+    }
+  }
+})
     // Check if wave is complete
     if (enemies.length === 0 && waveStarted && currentWave <= maxWaves) {
         waveStarted = false

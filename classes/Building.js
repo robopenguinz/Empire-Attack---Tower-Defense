@@ -120,7 +120,7 @@ draw() {
     update() {
         this.draw()
 
-        if (this.ultimateAbility > 0) {
+        if (this.ultimateCooldown > 0) {
             this.ultimateCooldown--
         }
 
@@ -130,6 +130,11 @@ draw() {
         if (
             this.target && this.frames.current === 6 && this.frames.elapsed % this.frames.hold === 0) 
             this.shoot()
+
+        if (this.level === 3 && this.type === 'rapid' && this.ultimateCooldown <= 0) {
+            this.bulletStorm()
+            this.ultimateCooldown = 300
+        }
     }
 
     shoot() {
