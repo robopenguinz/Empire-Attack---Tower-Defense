@@ -337,21 +337,23 @@
     bottom: 0;
     background: rgba(0, 0, 0, 0.7);
     display: none;
-    pointer-events: none;
+    z-index: 10;
 ">
     <div style="
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 4vmin;
-    text-align: center;
-    -webkit-text-stroke: 0.2vmin black;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 4vmin;
+        text-align: center;
+        -webkit-text-stroke: 0.2vmin black;
+        pointer-events: none;
     ">
-    Select tower to merge with<br>
-    <span style="font-size: 2.5vmin; color: gold;">Cost: 200 coins</span>
-</div>
+        Select tower to merge with<br>
+        <span style="font-size: 2.5vmin; color: gold;">Cost: 200 coins</span><br>
+        <span style="font-size: 2vmin; color: white;">Press ESC to cancel</span>
+    </div>
 </div>
 
     <script src="placementTilesData.js"></script>

@@ -51,9 +51,9 @@ image.src = 'img/map1.png'
 
 const enemies = []  
 
-function spawnEnemies(spawnCount) {
+function spawnEnemies(spawnCount, isFinalWave = false) {
     for (let i = 1; i < spawnCount + 1; i++) {
-        const xOffset = i * 150 
+        const xOffset = isFinalWave ? Math.random() * 300: i * 150
 
         let enemyType
         let enemySpeed
@@ -80,7 +80,9 @@ function spawnEnemies(spawnCount) {
     }
 
     const hasBoss = enemies.some(enemy => enemy.type === 'boss')
+
     if (!hasBoss && spawnCount > 2) {
+        const xOffset = isFinalWave ? Math.random() * 75 : (spawnCount + 1) * 25
         enemies.push (
             new Enemy({
                 position: {x: waypoints[0].x - (spawnCount + 1) * 150, y: waypoints[0].y},
@@ -195,8 +197,8 @@ function animate() {
                if (canMerge && fusionCount < maxFusions && coins >= 200) {
                 c.font = 'bold 16px "Changa One"'
                 c.fillStyle = 'gold'
-                c.strokeText('MERGE (M key)', building.center.x, building.position.y - 10)
-                c.fillText('MERGE (M key)', building.center.x, building.position.y - 10)
+                c.strokeText('CLICK TO MERGE', building.center.x, building.position.y - 10)
+                c.fillText('CLICK TO MERGE', building.center.x, building.position.y - 10)
              } else {
                 c.font = 'bold 16px "Changa One"'
                 c.fillStyle = 'gold'
@@ -334,10 +336,10 @@ function animate() {
                 waveDisplay.style.display = 'none'
                 if (currentWave == maxWaves) {
                     // Grand Final Wave
-                    spawnEnemies(enemyCount * 8) 
+                    spawnEnemies(enemyCount * 8, true) 
                 } else {
                     enemyCount = Math.floor(3 * Math.pow(1.8, currentWave - 1))
-                    spawnEnemies(enemyCount)
+                    spawnEnemies(enemyCount, false)
                 }
                 waveStarted = true
             }, 2000)
@@ -385,22 +387,51 @@ canvas.addEventListener('click', (event) => {
                 document.querySelector('#fusionOverlay').style.pointerEvents = 'none'
 
                 console.log('Fusion successful!')
+            } else {
+                console.log('Towers must be afjacent!')
             }
+        } else {
+            // Cancel fusion mode if clicked elsewhere
+            fusionMode = false
+            selectedFusionTower = null
+            document.querySelector('#fusionOverlay').style.display = 'none'
+            document.querySelector('#fusionOverlay').style.pointerEvents = 'none'
         }
         return
     }
+    // Click on max tower
+    if (hoveredBuildingForSell && hoveredBuildingForSell.level === 3 && !hoveredBuildingForSell.isFusion) {
+        // Check if can merge
+        const canMerge = buildings.some(b =>
+            b !== hoveredBuildingForSell &&
+            b.level === 3 &&
+            !b.isFusion &&
+            Math.abs(b.position.x - hoveredBuildingForSell.position.x) + Math.abs(b.position.y - hoveredBuildingForSell.position.y) === 64
+        )
 
+        if (canMerge && fusionCount < maxFusions && coins >= 200) {
+            // Fusion Mode
+            fusionMode = true
+            selectedFusionTower = hoveredBuildingForSell
+            document.querySelector('#fusionOverlay').style.display = 'none'
+            //document.querySelector('#fusionOverlay').style.pointerEvents = 'auto'
+            return
+        }
+    }
 
     // Other code
     if (hoveredBuildingForSell) {
         if (event.shiftKey) {
              sellTower(hoveredBuildingForSell)
         } else {
-             upgradeTower(hoveredBuildingForSell);
+            if (hoveredBuildingForSell.level < 3 || hoveredBuildingForSell.isFusion) {
+                 upgradeTower(hoveredBuildingForSell)
+            }
         }
-        return;
+        return
     }
 
+    // Place new tower
     if (activeTile && !activeTile.isOccupied && coins >= TOWER_COSTS[selectedTowerType]) {  
         coins -= TOWER_COSTS[selectedTowerType]
         document.querySelector('#coins').innerHTML = coins
@@ -470,30 +501,12 @@ window.addEventListener('mousemove', (event) => {
 })
 
 window.addEventListener('keydown', (event) => {
-    if (event.key === 'm' || event.key === 'M') {
-        if (hoveredBuildingForSell && hoveredBuildingForSell.level === 3 && !hoveredBuildingForSell.isFusion) {
-            if (fusionCount >= maxFusions) {
-                console.log('Max fusions reached!')
-                return
-            }
-            if (coins < 200) {
-                console.log('Need 200 coins to fuse!')
-                return
-            }
-            
-            //Enter fusion mode
-            fusionMode = true
-            selectedFusionTower = hoveredBuildingForSell
-            document.querySelector('#fusionOverlay').style.display = 'block'
-            document.querySelector('#fusionOverlay').style.pointerEvents = 'auto'
-        }
-    }
-    if (event.key === 'Escape') {
-        // Cancel fusion
+    if (event.key === 'Escape' && fusionMode) {
+        // Cancel fusion mode
         fusionMode = false
         selectedFusionTower = null
         document.querySelector('#fusionOverlay').style.display = 'none'
-        document.querySelector('#fusionOverlay').style.pointerEvents = 'none'
+        console.log('Fusion cancelled')
     }
 })
 
