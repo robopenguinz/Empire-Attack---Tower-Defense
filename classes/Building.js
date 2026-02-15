@@ -115,6 +115,19 @@ draw() {
         c.fill()
         c.restore()
     }
+
+    // Fusion tower epic glow
+    if (this.isFusion) {
+        c.save()
+        c.globalAlpha = 0.4
+        c.beginPath()
+        c.arc(this.center.x, this.center.y, 60, 0, Math.PI * 2)
+        const gradient = c.createRadialGradient(this.center.x, this.center.y, 0, this.center.x, this.center.y, 60)
+        gradient.addColorStop(0, 'rgba(255,0,255,0.8)')
+        c.fillStyle = gradient
+        c.fill()
+        c.restore()
+    }
 }
 
     update() {
@@ -142,6 +155,29 @@ draw() {
 
         const isChainLightning = this.level === 3 && this.type === 'rock' && this.shotsFired % 5 === 0
 
+        // Minigun multi-shot
+        if (this.multiShot && this.isFusion) {
+            const nearbyEnemies = enemies.filter(enemy => {
+                const dist = Math.hypot(enemy.center.x - this.center.x, enemy.center.y - this.center.y)
+                return distance < this.radius && enemy.health > 0
+            }).slice(0, 3)
+
+            nearbyEnemies.forEach(enemy => {
+                this.projectiles.push(
+                    new Projectile({
+                        position: {
+                            x: this.center.x - 20,
+                            y: this.center.y - 110
+                        },
+                        enemy: enemy,
+                        damage: this.damage,
+                        source: this
+                    })
+                )
+            })
+            return
+        }
+
         this.projectiles.push(
             new Projectile({
                 position: {
@@ -151,7 +187,8 @@ draw() {
                 enemy: this.target,
                 damage: this.damage,
                 isChainLightning: isChainLightning,
-                isPiercing: this.level === 3 && this.type === 'sniper',
+                isPiercing: (this.level === 3 && this.type === 'sniper') || this.fusionType === 'railgun_destroyer',
+                splashDamage: this.splashDamage,
                 source: this
             })
         )
@@ -175,14 +212,13 @@ draw() {
             }
         }  
     }
-}
 
 canFuse() {
     return this.level === 3 && !this.isFusion
 }
 
 getFusionType(otherTower) {
-    const types = [this.types, otherTower.type].sort().join('_')
+    const types = [this.type, otherTower.type].sort().join('_')
 
     const fusionMap = {
         'rock_rock': 'earthquake_titan',
@@ -190,7 +226,7 @@ getFusionType(otherTower) {
         'rapid_rapid': 'minigun_fortress',
         'rock_sniper': 'railgun_destroyer',
         'rapid_rock': 'grenade_launcher',
-        'rapid_sniper': 'smart_turrent'
+        'rapid_sniper': 'smart_turret'
     }
 
     return fusionMap[types] || null
@@ -230,6 +266,7 @@ fuseWith(otherTower) {
         this.radius = 600
         this.damage = 500
         this.fireRate = 6
+        this.color = 'rgba(255, 255, 0, 0.5)'
         this.chargingShot = false
         this.chargeTime = 0
     } else if (fusionType === 'grenade_launcher') {
@@ -240,7 +277,7 @@ fuseWith(otherTower) {
         this.fireRate = 3
         this.color = 'rgba(255, 165, 0, 0.5)'
     } else if (fusionType === 'smart_turret') {
-        this.name = 'Smart Turrent'
+        this.name = 'Smart Turret'
         this.radius = 450
         this.damage = 80
         this.fireRate = 2
@@ -250,4 +287,5 @@ fuseWith(otherTower) {
 
     this.frames.hold = this.fireRate
     return true
+}
 }

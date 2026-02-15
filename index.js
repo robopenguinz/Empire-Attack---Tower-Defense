@@ -183,14 +183,33 @@ function animate() {
                 c.font = 'bold 16px "Changa One"'
                 c.strokeText(upgradeCost, building.center.x, building.position.y - 10)
                 c.fillText(upgradeCost, building.center.x, building.position.y - 10)
-            } else {
+            } else if (!building.isFusion) {
+               //Check if can fuse
+               const canMerge = buildings.some(b =>
+                b !== building &&
+                b.level === 3 &&
+                !b.isFusion &&
+                Math.abs(b.position.x - building.position.x) + Math.abs(b.position.y - building.position.y) === 64
+               )
+
+               if (canMerge && fusionCount < maxFusions && coins >= 200) {
+                c.font = 'bold 16px "Changa One"'
+                c.fillStyle = 'gold'
+                c.strokeText('MERGE (M key)', building.center.x, building.position.y - 10)
+                c.fillText('MERGE (M key)', building.center.x, building.position.y - 10)
+             } else {
                 c.font = 'bold 16px "Changa One"'
                 c.fillStyle = 'gold'
                 c.strokeText('MAX LEVEL', building.center.x, building.position.y - 10)
                 c.fillText('MAX LEVEL', building.center.x, building.position.y - 10)
-            }
+            }    
+        } else {
+            c.font = 'bold 14px "Changa One"'
+            c.fillStyle = 'magenta'
+            c.strokeText('FUSION TOWER', building.center.x, building.position.y - 10)
+            c.fillText('FUSION TOWER', building.center.x, building.position.y - 10)
         }
-
+    }
         for (let i = building.projectiles.length - 1; i >= 0; i--) {
             const projectile = building.projectiles[i] 
             
@@ -332,6 +351,47 @@ const mouse = {
 }
 
 canvas.addEventListener('click', (event) => {
+    // Fusion mode
+    if (fusionMode && selectedFusionTower) {
+        if (hoveredBuildingForSell && hoveredBuildingForSell !== selectedFusionTower && hoveredBuildingForSell.level === 3 && !hoveredBuildingForSell.isFusion) {
+            
+            const dx = Math.abs(hoveredBuildingForSell.position.x - selectedFusionTower.position.x)
+            const dy = Math.abs(hoveredBuildingForSell.position.y - selectedFusionTower.position.y)
+
+            if ((dx === 64 && dy === 0) || (dx === 0 && dy === 64)) {
+                // Fusion being preformed
+                coins -= 200
+                document.querySelector('#coins').innerHTML = coins
+
+                selectedFusionTower.fuseWith(hoveredBuildingForSell)
+
+                // Remove other tower
+                const otherIndex = buildings.indexOf(hoveredBuildingForSell)
+                buildings.splice(otherIndex, 1)
+
+                // Free the tile up
+                const tileIndex = placementTiles.findIndex(tile =>
+                    tile.position.x === hoveredBuildingForSell.position.x &&
+                    tile.position.y === hoveredBuildingForSell.position.y
+                )
+                if (tileIndex !== -1) {
+                    placementTiles[tileIndex].isOccupied = false
+                }
+
+                fusionCount++
+                fusionMode = false
+                selectedFusionTower = null
+                document.querySelector('#fusionOverlay').style.display = 'none'
+                document.querySelector('#fusionOverlay').style.pointerEvents = 'none'
+
+                console.log('Fusion successful!')
+            }
+        }
+        return
+    }
+
+
+    // Other code
     if (hoveredBuildingForSell) {
         if (event.shiftKey) {
              sellTower(hoveredBuildingForSell)
@@ -409,6 +469,34 @@ window.addEventListener('mousemove', (event) => {
     }
 })
 
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'm' || event.key === 'M') {
+        if (hoveredBuildingForSell && hoveredBuildingForSell.level === 3 && !hoveredBuildingForSell.isFusion) {
+            if (fusionCount >= maxFusions) {
+                console.log('Max fusions reached!')
+                return
+            }
+            if (coins < 200) {
+                console.log('Need 200 coins to fuse!')
+                return
+            }
+            
+            //Enter fusion mode
+            fusionMode = true
+            selectedFusionTower = hoveredBuildingForSell
+            document.querySelector('#fusionOverlay').style.display = 'block'
+            document.querySelector('#fusionOverlay').style.pointerEvents = 'auto'
+        }
+    }
+    if (event.key === 'Escape') {
+        // Cancel fusion
+        fusionMode = false
+        selectedFusionTower = null
+        document.querySelector('#fusionOverlay').style.display = 'none'
+        document.querySelector('#fusionOverlay').style.pointerEvents = 'none'
+    }
+})
+
 let gameStarted = false
 
 document.querySelector('#startButton').addEventListener('click', () => {
@@ -431,13 +519,16 @@ function restartGame() {
     enemies.length = 0
     buildings.length = 0
     explosions.length = 0
-    coins = 100
+    coins = 150
     hearts = 10
     currentWave = 1
     enemyCount = 3
     gameStarted = false
     waveStarted = false
     selectedTowerType = 'rock'
+    fusionCount = 0
+    fusionMode = false
+    selectedFusionTower = null
 
     placementTiles.forEach(tile => {
         tile.isOccupied = false

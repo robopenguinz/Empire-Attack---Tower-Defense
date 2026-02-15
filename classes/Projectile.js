@@ -1,10 +1,7 @@
 class Projectile extends Sprite {
-    constructor({position = {x:0, y:0}, enemy, damage = 20, isChainLightning = false, isPiercing = false, source = null}) {
+    constructor({position = {x:0, y:0}, enemy, damage = 20, isChainLightning = false, isPiercing = false, source = null, isSplash = false, splashDamage = 0}) {
         super({ position, imageSrc: 'img/projectile.png' })
-        this.velocity = {
-        x: 0,
-        y: 0
-    }
+        this.velocity = {x: 0, y: 0}
     this.enemy = enemy
     this.radius = 10
     this.damage = damage
@@ -12,6 +9,8 @@ class Projectile extends Sprite {
     this.isPiercing = isPiercing
     this.source = source
     this.hasHit = []
+    this.isSplash = isSplash
+    this.splashDamage = splashDamage
 }
 
 update() {
