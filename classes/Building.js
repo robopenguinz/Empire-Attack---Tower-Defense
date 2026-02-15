@@ -176,3 +176,78 @@ draw() {
         }  
     }
 }
+
+canFuse() {
+    return this.level === 3 && !this.isFusion
+}
+
+getFusionType(otherTower) {
+    const types = [this.types, otherTower.type].sort().join('_')
+
+    const fusionMap = {
+        'rock_rock': 'earthquake_titan',
+        'sniper_sniper': 'orbital_cannon',
+        'rapid_rapid': 'minigun_fortress',
+        'rock_sniper': 'railgun_destroyer',
+        'rapid_rock': 'grenade_launcher',
+        'rapid_sniper': 'smart_turrent'
+    }
+
+    return fusionMap[types] || null
+}
+
+fuseWith(otherTower) {
+    const fusionType = this.getFusionType(otherTower)
+    if (!fusionType) return false
+
+    this.isFusion = true
+    this.fusionType = fusionType
+    this.level = 4 // Special level for fusions
+
+    // Fusion Stats
+    if (fusionType === 'earthquake_titan') {
+        this.name = 'Earthquake Titan'
+        this.radius = 450
+        this.damage = 500
+        this.fireRate = 2
+        this.color = 'rgba(0, 0, 255, 0.5)'
+        this.stunCooldown = 0
+    } else if (fusionType === 'orbital_cannon') {
+        this.name = 'Orbital Cannon'
+        this.radius = 999999
+        this.damage = 200
+        this.fireRate = 10
+        this.color = 'rgba(255, 0, 0, 0.5)'
+    }  else if (fusionType === 'minigun_fortress') {
+        this.name = 'Minigun Fortress'
+        this.radius = 300
+        this.damage = 25
+        this.fireRate = 0.5
+        this.color = 'rgba(0, 255, 0, 0.5)'
+        this.multiShot = true
+    } else if (fusionType === 'railgun_destroyer') {
+        this.name = 'Railgun Destroyer'
+        this.radius = 600
+        this.damage = 500
+        this.fireRate = 6
+        this.chargingShot = false
+        this.chargeTime = 0
+    } else if (fusionType === 'grenade_launcher') {
+        this.name = 'Grenade Launcher'
+        this.radius = 350
+        this.damage = 60
+        this.splashDamage = 30
+        this.fireRate = 3
+        this.color = 'rgba(255, 165, 0, 0.5)'
+    } else if (fusionType === 'smart_turret') {
+        this.name = 'Smart Turrent'
+        this.radius = 450
+        this.damage = 80
+        this.fireRate = 2
+        this.color = 'rgba(128, 0, 128, 0.5)'
+        this.targetingMode = 'speed' //could be speed, health, or boss
+    }
+
+    this.frames.hold = this.fireRate
+    return true
+}

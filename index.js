@@ -95,10 +95,14 @@ const buildings = []
 let activeTile = undefined
 let enemyCount = 3
 let hearts = 10
-let coins = 100
+let coins = 150
 let waveStarted = false
 let currentWave = 1
-const maxWaves = 4
+const maxWaves = 6
+let fusionCount = 0
+const maxFusions = 3
+let selectedFusionTower = null
+let fusionMode = false
 const explosions = [] 
 
 let animationId
@@ -310,9 +314,10 @@ function animate() {
             setTimeout(() => {
                 waveDisplay.style.display = 'none'
                 if (currentWave == maxWaves) {
-                    spawnEnemies(enemyCount * 5) 
+                    // Grand Final Wave
+                    spawnEnemies(enemyCount * 8) 
                 } else {
-                    enemyCount += 2
+                    enemyCount = Math.floor(3 * Math.pow(1.8, currentWave - 1))
                     spawnEnemies(enemyCount)
                 }
                 waveStarted = true
