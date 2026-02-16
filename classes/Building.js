@@ -24,6 +24,7 @@ class Building extends Sprite {
 
         this.shotsFired = 0
         this.ultimateCooldown = 0
+        this.pulseValue = 0
 
         this.updateStats()
     }
@@ -103,10 +104,12 @@ getUpgradeCost() {
 draw() {
     super.draw()
 
+    this.pulseValue += 0.05
+
     //Max level glow effect
     if (this.level === 3) {
         c.save()
-        c.globalAlpha = 0.3
+        c.globalAlpha = 0.3 + Math.sin(this.pulseValue) * 0.1
         c.beginPath()
         c.arc(this.center.x, this.center.y, 40, 0, Math.PI * 2)
         if (this.type === 'rock') c.fillStyle ='blue'
