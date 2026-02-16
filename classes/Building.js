@@ -104,14 +104,16 @@ getUpgradeCost() {
 draw() {
     super.draw()
 
-    this.pulseValue += 0.05
-
-    //Max level glow effect
+    //Max level glow effect with pulse
     if (this.level === 3) {
+        this.pulseValue += 0.05
+        const pulseAlpha = 0.3 + Math.sin(this.pulseValue) * 0.15
+        const pulseRadius = 40 + Math.sin(this.pulseValue) * 5
+        
         c.save()
-        c.globalAlpha = 0.3 + Math.sin(this.pulseValue) * 0.1
+        c.globalAlpha = pulseAlpha
         c.beginPath()
-        c.arc(this.center.x, this.center.y, 40, 0, Math.PI * 2)
+        c.arc(this.center.x, this.center.y, pulseRadius, 0, Math.PI * 2)
         if (this.type === 'rock') c.fillStyle ='blue'
         if (this.type === 'sniper') c.fillStyle = 'red'
         if (this.type === 'rapid') c.fillStyle = 'green'
