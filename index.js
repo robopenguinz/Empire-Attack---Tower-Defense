@@ -119,6 +119,14 @@ function animate() {
         const enemy = enemies[i]
         enemy.update()
 
+        // Remove dead enemies
+        if (enemy.health <= 0) {
+            enemies.splice(i, 1)
+            coins += enemy.coinValue
+            document.querySelector('#coins').innerHTML = coins
+            continue
+        }
+
         if (enemy.position.x > canvas.width) {
             hearts -= 1
             enemies.splice(i, 1)

@@ -64,6 +64,31 @@ class Enemy extends Sprite{
 
         super.draw()
 
+    // Status effect overlays
+    if (this.frozen) {
+        c.save()
+        c.globalAlpha = 0.6
+        c.fillStyle = 'cyan'
+        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.restore()
+    }
+
+    if (this.poisoned) {
+        c.save()
+        c.globalAlpha = 0.4
+        c.fillStyle = 'green'
+        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.restore()
+    }
+
+    if (this.slowed) {
+        c.save()
+        c.globalAlpha = 0.4
+        c.fillStyle = 'purple'
+        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.restore()
+    }
+        // Boss shield bar
         if (this.type === 'boss' && this.shield > 0) {
             c.fillStyle = 'cyan'
             c.fillRect(this.position.x, this.position.y - 30, this.width, 8)
@@ -76,7 +101,7 @@ class Enemy extends Sprite{
         c.fillRect(this.position.x, this.position.y - 15, this.width, 10)
     
         c.fillStyle = 'green'
-        c.fillRect(this.position.x, this.position.y - 15, this.width * this.health / 100, 10)
+        c.fillRect(this.position.x, this.position.y - 15, this.width * (this.health / this.maxHealth), 10)
 
         //label for boss
         if (this.type === 'boss') {
@@ -98,6 +123,39 @@ class Enemy extends Sprite{
             this.health = Math.min(this.health + this.regenRate, this.maxHealth)
         }
        
+    // Handle freeze
+    if (this.frozen) {
+        this.frozenTimer--
+        if (this.frozenTimer <= 0) {
+            this.frozen = false
+        }
+        return // Don't move while frozen
+    }
+
+    // Handle poison
+    if (this.poisoned) {
+        this.poisonTimer--
+        this.poisonTickCounter++
+        
+        if (this.poisonTickCounter >= this.poisonTickRate) {
+            this.takeDamage(this.poisonDamage)
+            this.poisonTickCounter = 0
+        }
+        
+        if (this.poisonTimer <= 0) {
+            this.poisoned = false
+        }
+    }
+
+    // Handle slow
+    if (this.slowed) {
+        this.slowTimer--
+        if (this.slowTimer <= 0) {
+            this.slowed = false
+            this.speed = this.originalSpeed
+        }
+    }
+   
         const waypoint = waypoints[this.waypointIndex]
         const yDistance = waypoint.y - this.center.y
         const xDistance = waypoint.x - this.center.x

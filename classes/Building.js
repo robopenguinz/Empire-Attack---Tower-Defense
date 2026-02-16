@@ -43,7 +43,7 @@ updateStats() {
         this.fireRate = 2
     } else if (this.level === 3) {
         this.radius = 350
-        this.damage = 40
+        this.damage = 300
         this.fireRate = 1
         this.ultimateAbility = 'chain_lightning'
     }
@@ -60,7 +60,7 @@ updateStats() {
         this.fireRate = 6
     } else if (this.level === 3) {
         this.radius = 500
-        this.damage = 100
+        this.damage = 750
         this.fireRate = 4
         this.ultimateAbility = 'piercing_shot'
     } 
@@ -77,7 +77,7 @@ updateStats() {
         this.fireRate = 1
     } else if (this.level === 3) {
         this.radius = 260
-        this.damage = 16
+        this.damage = 120
         this.fireRate = 1
         this.ultimateAbility = 'bullet_storm'
     }
@@ -132,23 +132,28 @@ draw() {
 
     update() {
         this.draw()
+        
 
         if (this.ultimateCooldown > 0) {
             this.ultimateCooldown--
         }
 
-        if (this.target || !this.target && this.frames.current !== 0) 
-            super.update()
-
-        if (
-            this.target && this.frames.current === 6 && this.frames.elapsed % this.frames.hold === 0) 
-            this.shoot()
-
-        if (this.level === 3 && this.type === 'rapid' && this.ultimateCooldown <= 0) {
-            this.bulletStorm()
-            this.ultimateCooldown = 300
-        }
+       // Activate fusion ultimate when ready
+    if (this.isFusion && this.ultimateAbility && this.ultimateCooldown === 0) {
+        this.activateUltimate(enemies)
     }
+
+    if (this.target || !this.target && this.frames.current !== 0) 
+        super.update()
+
+    if (this.target && this.frames.current === 6 && this.frames.elapsed % this.frames.hold === 0) 
+        this.shoot()
+
+    if (this.level === 3 && this.type === 'rapid' && this.frames.current === 6 && this.frames.elapsed % this.frames.hold === 0 && this.ultimateCooldown <= 0) {
+        this.bulletStorm()
+        this.ultimateCooldown = 300
+    }
+}
 
     shoot() {
         this.shotsFired++
@@ -244,48 +249,120 @@ fuseWith(otherTower) {
     if (fusionType === 'earthquake_titan') {
         this.name = 'Earthquake Titan'
         this.radius = 450
-        this.damage = 500
-        this.fireRate = 2
+        this.damage = 10000
+        this.fireRate = 0.2
         this.color = 'rgba(0, 0, 255, 0.5)'
-        this.stunCooldown = 0
+        this.ultimateAbility = 'freeze'
+        this.ultimateCooldownMax = 600
+        this.ultimateCooldown = 0 
     } else if (fusionType === 'orbital_cannon') {
         this.name = 'Orbital Cannon'
         this.radius = 999999
-        this.damage = 200
-        this.fireRate = 10
+        this.damage = 4000
+        this.fireRate = 1
         this.color = 'rgba(255, 0, 0, 0.5)'
+        this.ultimateAbility = 'mass_damage'
+        this.ultimateCooldownMax = 450
+        this.ultimateCooldown = 0
     }  else if (fusionType === 'minigun_fortress') {
         this.name = 'Minigun Fortress'
         this.radius = 300
-        this.damage = 25
-        this.fireRate = 0.5
+        this.damage = 500
+        this.fireRate = 0.05
         this.color = 'rgba(0, 255, 0, 0.5)'
         this.multiShot = true
+        this.ultimateAbility = 'poison'
+        this.ultimateCooldownMax = 750
+        this.ultimateCooldown = 0
     } else if (fusionType === 'railgun_destroyer') {
         this.name = 'Railgun Destroyer'
         this.radius = 600
-        this.damage = 500
-        this.fireRate = 6
+        this.damage = 1000
+        this.fireRate = 0.6
         this.color = 'rgba(255, 255, 0, 0.5)'
         this.chargingShot = false
         this.chargeTime = 0
+        this.ultimateAbility = 'push_back'
+        this.ultimateCooldownMax = 900
+        this.ultimateCooldown = 0
     } else if (fusionType === 'grenade_launcher') {
         this.name = 'Grenade Launcher'
         this.radius = 350
-        this.damage = 60
+        this.damage = 1200
         this.splashDamage = 30
-        this.fireRate = 3
+        this.fireRate = 0.3
         this.color = 'rgba(255, 165, 0, 0.5)'
+        this.ultimateAbility = 'mass_damage'
+        this.ultimateCooldownMax = 450
+        this.ultimateCooldown = 0
     } else if (fusionType === 'smart_turret') {
         this.name = 'Smart Turret'
         this.radius = 450
-        this.damage = 80
-        this.fireRate = 2
+        this.damage = 1600
+        this.fireRate = 0.2
         this.color = 'rgba(128, 0, 128, 0.5)'
         this.targetingMode = 'speed' //could be speed, health, or boss
+        this.ultimateAbility = 'slow'
+        this.ultimateCooldownMax = 600
+        this.ultimateCooldown = 0
     }
 
     this.frames.hold = this.fireRate
     return true
+}
+
+activateUltimate(enemies) {
+    if (!this.ultimateAbility) return 
+
+    console.log(`${this.name} activated ${this.ultimateAbility}!`)
+
+    if (this.ultimateAbility === 'freeze') {
+        // Freeze all enemies
+        enemies.forEach(enemy => {
+            enemy.frozen = true
+            enemy.frozenTimer = 300
+        })
+    } else if (this.ultimateAbility === 'push_back') {
+        // Push enemies back
+        enemies.forEach(enemy => {
+            if (enemy.waypointIndex > 0) {
+                // move back
+                const prevWaypoint = waypoints[Math.max(0, enemy.waypointIndex - 2)]
+                enemy.position.x = prevWaypoint.x - 100
+                enemy.position.y = prevWaypoint.y
+                enemy.waypointIndex = Math.max(0, enemy.waypointIndex - 2)
+                enemy.center = {
+                    x: enemy.position.x + enemy.width / 2,
+                    y: enemy.position.y + enemy.height / 2
+                }
+            }
+        })
+     } else if (this.ultimateAbility === 'mass_damage') {
+        // Deal 150 damage to all enemies
+        enemies.forEach(enemy => {
+            enemy.takeDamage(1500)
+        })
+    } else if (this.ultimateAbility === 'poison') {
+        // Poison all enemies (10 damage per second for 5 seconds)
+        enemies.forEach(enemy => {
+            enemy.poisoned = true
+            enemy.poisonTimer = 300 // 5 seconds
+            enemy.poisonDamage = 100
+            enemy.poisonTickRate = 60 // Damage every second
+            enemy.poisonTickCounter = 0
+        })
+    } else if (this.ultimateAbility === 'slow') {
+        // Slow all enemies by 50% for 10 seconds
+        enemies.forEach(enemy => {
+            if (!enemy.originalSpeed) {
+                enemy.originalSpeed = enemy.speed
+            }
+            enemy.slowed = true
+            enemy.slowTimer = 600 // 10 seconds
+            enemy.speed = enemy.originalSpeed * 0.5
+        })
+    }
+
+    this.ultimateCooldown = this.ultimateCooldownMax
 }
 }
