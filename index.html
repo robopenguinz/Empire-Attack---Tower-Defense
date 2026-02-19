@@ -356,9 +356,43 @@
     </div>
 </div>
 
+<!-- Tutorial Overlay-->
+ <div id="tutorialOverlay" style ="
+ position: absolute;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0;
+ background: rgba(0, 0, 0, 0.85);
+ display: none;
+ z-index: 20;
+ align-items: center;
+ justify-content: center;
+ ">
+    <div style="
+    max-width: 800px;
+    padding: 40px;
+    background: rgba(20, 20, 20, 0.95);
+    border: 4px solid gold;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+">
+  
+</div>
+
+
+
 <!-- Background Music-->
  <audio id="bgMusic" loop>  
     <source src="Age%20of%20War%20-%20Theme%20Soundtrack.mp3" type="audio/mpeg">
+ </audio>
+
+ <audio id="hitSound">
+    <source src="Hitmarker.mp3" type="audio/mpeg">
+ </audio>
+ <audio id="shootSound">
+    <source src="8-Bit Explosion Sound Effect(3).mp3" type="audio/mpeg">
  </audio>
 
     <script src="placementTilesData.js"></script>

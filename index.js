@@ -20,6 +20,46 @@ canvas.height = 768
 c.fillStyle = 'white'
 c.fillRect(0, 0, canvas.width, canvas.height)
 
+class DamageNumber {
+    constructor(x, y, damage, isCrit = false) {
+        this.x = x
+        this.y = y
+        this.damage = damage
+        this.isCrit = isCrit
+        this.opacity = 1
+        this.vel = -2
+        this.lifetime = 60
+    }
+
+    draw() {
+        c.save()
+        c.globalAlpha = this.opacity
+        c.font = this.isCrit ? 'bold 32px "Changa One"' : 'bold 20px "Chnaga One"'
+        c.textAlign = 'center'
+
+        if (this.isCrit) {
+            c.fillStyle = '#ff0000'
+            c.shadowColor = '#ff0000'
+            c.shadowBlur = 10
+        } else {
+            c.fillStyle = '#ffff00'
+        }
+
+        c.strokeStyle = 'black'
+        c.lineWidth = 3
+        const text = this.isCrit ? `CRIT! ${this.damage}` : this.damage.toString()
+        c.strokeText(text, this.x, this.y)
+        c.fillText(text, this.x, this.y)
+        c.restore()
+    }
+
+    update() {
+        this.y += this.vel
+        this.lifetime--
+        this.opacity = this.lifetime / 60
+    }
+}
+
 console.log(placementTilesData)
 const placementTilesData2D = []
 
@@ -106,6 +146,13 @@ const maxFusions = 3
 let selectedFusionTower = null
 let fusionMode = false
 const explosions = [] 
+let waveStartTime = 0
+let waveBonusCoins = 0
+let comboCount = 0
+let lastKillTime = 0
+let comboMultiplier = 1
+let critStreak = 0
+let damageNumbers = []
 
 let animationId
 function animate() {
@@ -149,6 +196,59 @@ function animate() {
         }
     }
 
+    // Display combo counter
+    if (comboCount > 0) {
+        // Check if combo should break ( 3 sec w/o kill)
+        if (Date.now() - lastKillTime > 3000) {
+            comboCount = 0
+            comboMultiplier = 1
+        } else {
+            // Draw combo display
+            const comboX = canvas.width - 150
+            const comboY = 100
+
+            c.save()
+            c.font = 'bold 40px "Changa One"'
+            c.textAlign = 'right'
+
+            // Glow effect based on combo size
+            if (comboCount >= 20) {
+                c.shadowColor = 'gold'
+                c.shadowBlur = 20
+                c.fillStyle = 'gold'
+            } else if (comboCount >= 10) {
+                c.shadowColor = 'orange'
+                c.shadowBlur = 15 
+                c.fillStyle = 'orange'
+            } else if (comboCount >= 5) {
+                c.shadowColor = 'yellow'
+                c.shadowBlur = 10
+                c.fillStyle = 'yellow'
+            } else {
+                c.fillStyle = 'white'
+            }
+
+            c.strokeStyle = 'black'
+            c.lineWidth = 3
+            c.strokeText(`${comboCount}x`, comboX, comboY)
+            c.fillText(`${comboCount}x` , comboX, comboY)
+
+            c.font = 'bold 16px "Changa One"'
+            c.strokeText('COMBO', comboX, comboY + 25)
+            c.fillText('COMBO', comboX, comboY + 25)
+            c.restore()
+        }
+    }
+
+    for (let i = damageNumbers.length - 1; i >= 0; i--) {
+        const dmgNum = damageNumbers[i]
+        dmgNum.draw()
+        dmgNum.update()
+        if (dmgNum.lifetime <= 0) {
+            damageNumbers.splice(i, 1)
+        }
+    }
+
     placementTiles.forEach(tile => {
         tile.update(mouse)
     })
@@ -156,13 +256,32 @@ function animate() {
     buildings.forEach(building => {
         building.update()
         building.target = null
-        const validEnemies = enemies.filter(enemy => {
+
+
+        let validEnemies = enemies.filter(enemy => {
             const xDifference = enemy.center.x - building.center.x
             const yDifference = enemy.center.y - building.center.y
             const distance = Math.hypot(xDifference, yDifference)
             return distance < enemy.radius + building.radius
         })
-        building.target = validEnemies[0]
+
+        if (validEnemies.length > 0) {
+            switch(building.targetingMode) {
+                case 'first':
+                    validEnemies.sort((a, b) => b.waypointIndex - a.waypointIndex)
+                    break
+                case 'last':
+                    validEnemies.sort((a, b) => a.waypointIndex - b.waypointIndex)
+                    break
+                case 'strongest':
+                    validEnemies.sort((a, b) => b.health - a.health)
+                    break
+                case 'weakest':
+                    validEnemies.sort((a, b) => a.health - b.health)
+                    break
+            }
+            building.target = validEnemies[0]
+        }
 
         if (building === hoveredBuildingForSell) {
            c.beginPath()
@@ -187,6 +306,21 @@ function animate() {
             const towerName = `Level ${building.level} ${building.name}`
             c.strokeText(towerName, building.center.x, building.position.y - 30)
             c.fillText(towerName, building.center.x, building.position.y - 30)
+
+            // Show kill count
+            if (building.killCount > 0) {
+                c.font = 'bold 14px "Changa One"'
+                c.fillStyle = 'yellow'
+                c.strokeText(`💀 ${building.killCount} kills`, building.center.x, building.position.y - 50)
+                c.fillText(`💀 ${building.killCount} kills`, building.center.x, building.position.y - 50)
+            }
+
+            // Show targeting mode
+            c.font = 'bold 12px "Changa One"'
+            c.fillStyle = 'cyan'
+            const targetText = `Target: ${building.targetingMode.toUpperCase()}`
+            c.strokeText(targetText, building.center.x, building.position.y - 65)
+            c.fillText(targetText, building.center.x, building.position.y - 65)
 
             if (building.level < 3) {
                 const upgradeCost = `Upgrade: ${building.getUpgradeCost()} coins`
@@ -246,6 +380,49 @@ function animate() {
                     building.projectiles.splice(i, 1)
                     continue
                 }
+
+                // Play hit sound
+                const hitSound = document.querySelector('#hitSound')
+                if (hitSound) {
+                    hitSound.currentTime = 0
+                    hitSound.volume = 0.12
+                    hitSound.play().catch(e => {})
+                }
+
+                // Critical Hit System
+                let actualDamage = projectile.damage
+                let isCrit = false
+                const critChance = 0.15 + (critStreak * 0.05) 
+
+                if (Math.random() < critChance) {
+                    isCrit = true
+                    critStreak++
+                    const critMultiplier = 2 + (critStreak * 0.5)
+                    actualDamage = Math.floor(projectile.damage * Math.min(critMultiplier, 5))
+
+                    // Screen shake on big crits
+                    if (critStreak >= 3) {
+                        const shakeAmount = Math.min(critStreak, 8)
+                        c.translate(
+                            (Math.random() - 0.5) * shakeAmount,
+                            (Math.random() - 0.5) * shakeAmount
+                        )
+
+                    }
+
+                    console.log(`💥 CRITICAL HIT! ${critStreak}x STREAK! ${actualDamage} damage!`)
+                } else {
+                    critStreak = 0
+                }
+
+                projectile.enemy.health -= actualDamage
+
+                damageNumbers.push(new DamageNumber(
+                    projectile.enemy.center.x,
+                    projectile.enemy.center.y - 20,
+                    actualDamage,
+                    isCrit
+                ))
             
                 //Chain effect
                 if (projectile.isChainLightning) {
@@ -289,9 +466,42 @@ function animate() {
                 })
 
                 if (enemyIndex > -1) {
+                    building.killCount++ // Track tower kills
+
+                    // Combo System
+                    comboCount ++
+                    lastKillTime = Date.now()
+
+                    // Bonus Coins at combo milestones
+                    let comboBonus = 0
+                    if (comboCount === 5) {
+                        comboBonus = 25
+                        comboMultiplier = 1.2
+                    }   else if (comboCount === 10) {
+                        comboBonus = 50
+                        comboMultiplier = 1.5
+                    } else if (comboCount === 15) {
+                        comboBonus = 100
+                        comboMultiplier = 2
+                    } else if (comboCount == 20) {
+                        comboBonus = 200
+                        comboMultiplier = 2.5
+                    } else if (comboCount % 10 === 0 && comboCount > 20) {
+                        comboBonus = comboCount * 10
+                        comboMultiplier = 3
+                    }
+
                     enemies.splice(enemyIndex, 1)
-                    coins += projectile.enemy.coinValue
+
+                    // Combo multiplier to coin value
+                     const coinValue = Math.floor(projectile.enemy.coinValue * comboMultiplier) + comboBonus
+                    coins += coinValue  
                     document.querySelector('#coins').innerHTML = coins
+
+                    // Show floating text
+                    if (comboBonus > 0) {
+                        console.log(`🔥${comboCount}x COMBO! +${comboBonus} BONUS COINS!`)
+                    }
                 }
             }
 
@@ -326,22 +536,39 @@ function animate() {
     // Check if wave is complete
     if (enemies.length === 0 && waveStarted && currentWave <= maxWaves) {
         waveStarted = false
-        currentWave++
+
+        //Calculate wave completion bonus
+        const waveTime = Math.floor((Date.now() - waveStartTime) / 1000)
+        if (waveTime < 30) {
+            waveBonusCoins = 100
+        } else if (waveTime < 60) {
+            waveBonusCoins = 50
+        } else {
+            waveBonusCoins = 25
+        }
+        coins += waveBonusCoins
+        document.querySelector('#coins').innerHTML = coins
         
+        currentWave++
+
         if (currentWave > maxWaves) {
             cancelAnimationFrame(animationId)
             document.querySelector('#youWin').style.display = 'flex'
         } else {
             const waveDisplay = document.querySelector('#waveDisplay')
             if (currentWave === maxWaves) {
-                waveDisplay.innerHTML = 'FINAL ROUND'
+                waveDisplay.innerHTML = `<div style="text-align: center;">WAVE COMPLETE!<br><span style="font-size: 4vmin; color: gold;">+${waveBonusCoins} BONUS!</span><br><span style="font-size: 5vmin;">FINAL ROUND</span>`
             } else {
-                waveDisplay.innerHTML = `ROUND ${currentWave}`
+                waveDisplay.innerHTML = `<div style="text-align: center;">WAVE COMPLETE!<br><span style="font-size: 4vmin; color: gold;">+${waveBonusCoins} BONUS!</span><br><span style="font-size: 5vmin;">ROUND ${currentWave}</span>`
             }
             waveDisplay.style.display = 'block'
             
             setTimeout(() => {
                 waveDisplay.style.display = 'none'
+                waveStartTime = Date.now() // Reset timer for next wave
+                comboCount = 0 // Reset combo between waves
+                comboMultiplier = 1
+
                 if (currentWave == maxWaves) {
                     // Grand Final Wave
                     spawnEnemies(enemyCount * 8, true) 
@@ -350,7 +577,7 @@ function animate() {
                     spawnEnemies(enemyCount, false)
                 }
                 waveStarted = true
-            }, 2000)
+            }, 3000)
         }
     }
 }
@@ -516,6 +743,16 @@ window.addEventListener('keydown', (event) => {
         document.querySelector('#fusionOverlay').style.display = 'none'
         console.log('Fusion cancelled')
     }
+
+if (event.key === 't' || event.key === 'T') {
+    if (hoveredBuildingForSell) {
+    const modes=['first', 'last', 'strongest', 'weakest']
+    const currentIndex = modes.indexOf(hoveredBuildingForSell.targetingMode)
+    const nextIndex = (currentIndex + 1) % modes.length
+    hoveredBuildingForSell.targetingMode = modes[nextIndex]
+    console.log(`🎯 Targeting mode: ${modes[nextIndex].toUpperCase()}`)
+}
+}
 })
 
 let gameStarted = false
@@ -539,14 +776,11 @@ document.querySelector('#startButton').addEventListener('click', () => {
 
     setTimeout(() => {
         waveDisplay.style.display = 'none'
+        waveStartTime = Date.now()
         spawnEnemies(enemyCount)
         waveStarted = true
     }, 2000)
 })
-
-const bgMusic = document.querySelector('#bgMusic')
-bgMusic.pause()
-bgMusic.currentTime = 0
 
 function restartGame() {
     enemies.length = 0
@@ -562,6 +796,15 @@ function restartGame() {
     fusionCount = 0
     fusionMode = false
     selectedFusionTower = null
+    comboCount = 0
+    lastKillTime = 0
+    comboMultiplier = 1
+    critStreak = 0
+    damageNumbers = []
+
+    const bgMusic = document.querySelector('#bgMusic')
+    bgMusic.pause()
+    bgMusic.currentTime = 0
 
     placementTiles.forEach(tile => {
         tile.isOccupied = false

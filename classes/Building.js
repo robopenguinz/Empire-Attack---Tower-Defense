@@ -25,6 +25,8 @@ class Building extends Sprite {
         this.shotsFired = 0
         this.ultimateCooldown = 0
         this.pulseValue = 0
+        this.killCount = 0
+        this.targetingMode = 'first'
 
         this.updateStats()
     }
@@ -162,6 +164,14 @@ draw() {
 
     shoot() {
         this.shotsFired++
+
+        // Play shoot sound
+        const shootSound = document.querySelector('#shootSound')
+        if (shootSound) {
+            shootSound.currentTime = 0
+            shootSound.volume = 0.15
+            shootSound.play().catch(e => {})
+        }
 
         const isChainLightning = this.level === 3 && this.type === 'rock' && this.shotsFired % 5 === 0
 
