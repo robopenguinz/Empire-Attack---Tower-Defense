@@ -106,6 +106,13 @@ Maximum 3 fusions per game!
 - Intelligent targeting system
 - Ultimate: Slow all enemies by 50% for 10 seconds (cooldown: 10s)
 
+### Recomended Strategy
+- First, place a sniper and level up to max and take out boss in wave 1.
+- Then, place rock towers to take out medium enemies in front and place rapid towers to take out stragglers in the back. (Make sure you have towers adjacent to each other for later)
+- Next, focus on investments for Fusion Towers to slow down and chip away massive damage to hoards.
+- Finally, Sell heavy towers like snipers for rapid and rock towers for multi-shot attacks to fend off final round of enemies.
+
+
 ## Credits
 
 - Sprite Graphics: craftpix.net
