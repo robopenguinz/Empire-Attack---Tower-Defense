@@ -112,6 +112,8 @@ Maximum 3 fusions per game!
 - Next, focus on investments for Fusion Towers to slow down and chip away massive damage to hoards.
 - Finally, Sell heavy towers like snipers for rapid and rock towers for multi-shot attacks to fend off final round of enemies.
 
+- Last tip, make sure you have enough defenses for the final round. 
+
 
 ## Credits
 
