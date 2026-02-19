@@ -153,6 +153,109 @@ let lastKillTime = 0
 let comboMultiplier = 1
 let critStreak = 0
 let damageNumbers = []
+let tutorialStep = 0
+let tutorialActive = false
+
+const tutorialSteps = [
+    {
+        title: "Welcome to Empire Attacks!",
+        text: "Defend your empire from waves of invading enemies by strategically placing defensive towers. Let's learn the basics!"
+    },
+    {
+        title: "Placing Towers 🗼",
+        text: "Click on the WHITE TILES to build towers. Choose from 3 types at the bottom:<br>• ROCK (50 coins) - Balanced damage & range<br>• SNIPER (75 coins) - Long range, slow fire<br>• RAPID (40 coins) - Fast fire, short range"
+    },
+    {
+        title: "Upgrading Towers ⬆️",
+        text: "Click on any tower to upgrade it!<br>• Level 1→2: 75 coins<br>•Level 2→3: 100 coins<br> Each uprade increases damage and range!"
+    },
+    {
+        title: "Fusion Towers ⚡",
+        text: "Merge two adjacent Level 3 towers for 200 coins to create ULTIMATE FUSION TOWERS with special abilities! You can fuse up to 3 times per game. Click a maxed tower to start fusion mode."
+    },
+    {
+        title: "Tower Targeting 🎯",
+        text: "Hover over any tower and press 'T' to cycle targeting modes:<br>• FIRST - Closest to goal<br>• LAST - Furthest from goal<br>• STRONGEST - Highest HP<br>• WEAKEST - Lowest HP"
+    },
+    {
+        title: "Selling Towers 💰",
+        text: "Hold SHIFT and click on a tower to sell it for 50% refund. Use this to reposition defenses!"
+    },
+    {
+        title: "Enemy Types 👹",
+        text: "3 enemy types will attack:<br>• TANK - High HP, medium speed<br>• SCOUT - Low HP, fast, 20% dodge<br>• BOSS - Massive HP, shields, regenerates!"
+    },
+    {
+        title: "Wave Bonuses 🏆",
+        text: "Complete waves quickly for bonuses:<br>• Under 30 sec = +100 coins<br>• Under 60 sec = +50 coins<br>• Otherwise = +25 coins<br><br>Speed is rewarded!"
+    },
+    {
+        title: "Ready to Defend  🛡️",
+        text: "You have 10 hearts and 150 starting coins. Survive 6 waves to win!<br><br>Press ESC to cancel fusion mode anytime. Good luck, Comander!"
+    }
+]
+
+function showTutorial() {
+    tutorialActive = true
+    tutorialStep = 0
+    updateTutorialDisplay()
+    document.querySelector('#tutorialOverlay').style.display = 'flex'
+}
+
+function updateTutorialDisplay() {
+    const step = tutorialSteps[tutorialStep]
+    document.querySelector('#tutorialTitle').innerHTML = step.title
+    document.querySelector('#tutorialText').innerHTML = step.text
+    document.querySelector('#tutorialProgress').innerHTML = `Step ${tutorialStep + 1} of ${tutorialSteps.length}`
+
+    // Change button text on last step
+    const nextBtn = document.querySelector('#tutorialNext')
+    if (tutorialStep === tutorialSteps.length - 1) {
+        nextBtn.innerHTML = 'START GAME!'
+    } else {
+        nextBtn.innerHTML = 'NEXT'
+    }
+}
+
+function nextTutorialStep() {
+    tutorialStep ++
+    if (tutorialStep >= tutorialSteps.length) {
+        endTutorial()
+    } else {
+        updateTutorialDisplay()
+    }
+}
+
+function endTutorial() {
+    tutorialActive = false
+    document.querySelector('#tutorialOverlay').style.display = 'none'
+    startGame()
+}
+
+function startGame() {
+    gameStarted = true
+    document.querySelector('#startScreen').style.display = 'none'
+    document.querySelector('#towerMenu').style.display = 'flex'
+
+    const bgMusic = document.querySelector('#bgMusic')
+    bgMusic.volume = 0.5
+    bgMusic.play().then(() => {
+        console.log('Music playing!')
+    }).catch(err => {
+        console.error('Music failed:', err)
+    })
+
+    const waveDisplay = document.querySelector('#waveDisplay')
+    waveDisplay.innerHTML = 'ROUND 1'
+    waveDisplay.style.display = 'block'
+
+    setTimeout (() => {
+        waveDisplay.style.display = 'none'
+        waveStartTime = Date.now()
+        spawnEnemies(enemyCount)
+        waveStarted = true
+    }, 2000)
+}
 
 let animationId
 function animate() {
@@ -758,28 +861,7 @@ if (event.key === 't' || event.key === 'T') {
 let gameStarted = false
 
 document.querySelector('#startButton').addEventListener('click', () => {
-    gameStarted = true
-    document.querySelector('#startScreen').style.display = 'none'
-    document.querySelector('#towerMenu').style.display = 'flex'
-
-    const bgMusic = document.querySelector('#bgMusic')
-    bgMusic.volume = 0.5
-    bgMusic.play().then(() => {
-        console.log('Music playing!')
-    }).catch(err => {
-        console.error('Music failed:', err)
-    })
-
-    const waveDisplay = document.querySelector('#waveDisplay')
-    waveDisplay.innerHTML = 'ROUND 1'
-    waveDisplay.style.display = 'block'
-
-    setTimeout(() => {
-        waveDisplay.style.display = 'none'
-        waveStartTime = Date.now()
-        spawnEnemies(enemyCount)
-        waveStarted = true
-    }, 2000)
+    showTutorial() //Show tutorial on start
 })
 
 function restartGame() {
@@ -876,3 +958,7 @@ document.querySelectorAll('.tower-option').forEach(option => {
 
 document.querySelector('#tryAgainLose').addEventListener('click', restartGame)
 document.querySelector('#tryAgainWin').addEventListener('click', restartGame)
+
+// Tutorial controls
+document.querySelector('#tutorialNext').addEventListener('click', nextTutorialStep)
+document.querySelector('#tutorialSkip').addEventListener('click', endTutorial)
