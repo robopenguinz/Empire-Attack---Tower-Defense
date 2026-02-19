@@ -111,6 +111,7 @@ Maximum 3 fusions per game!
 - Sprite Graphics: craftpix.net
 - Game design and code: Christopher Mercado
 - Font: Changa One (Google Fonts)
+- Song: Glorious Morning by Waterflame
 
 ## Contact
 

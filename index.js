@@ -525,6 +525,14 @@ document.querySelector('#startButton').addEventListener('click', () => {
     document.querySelector('#startScreen').style.display = 'none'
     document.querySelector('#towerMenu').style.display = 'flex'
 
+    const bgMusic = document.querySelector('#bgMusic')
+    bgMusic.volume = 0.5
+    bgMusic.play().then(() => {
+        console.log('Music playing!')
+    }).catch(err => {
+        console.error('Music failed:', err)
+    })
+
     const waveDisplay = document.querySelector('#waveDisplay')
     waveDisplay.innerHTML = 'ROUND 1'
     waveDisplay.style.display = 'block'
@@ -535,6 +543,10 @@ document.querySelector('#startButton').addEventListener('click', () => {
         waveStarted = true
     }, 2000)
 })
+
+const bgMusic = document.querySelector('#bgMusic')
+bgMusic.pause()
+bgMusic.currentTime = 0
 
 function restartGame() {
     enemies.length = 0
