@@ -46,7 +46,7 @@ updateStats() {
         this.fireRate = 2
     } else if (this.level === 3) {
         this.radius = 350
-        this.damage = 300
+        this.damage = 60
         this.fireRate = 1
         this.ultimateAbility = 'chain_lightning'
     }
@@ -63,7 +63,7 @@ updateStats() {
         this.fireRate = 6
     } else if (this.level === 3) {
         this.radius = 500
-        this.damage = 750
+        this.damage = 150
         this.fireRate = 4
         this.ultimateAbility = 'piercing_shot'
     } 
@@ -80,7 +80,7 @@ updateStats() {
         this.fireRate = 1
     } else if (this.level === 3) {
         this.radius = 260
-        this.damage = 120
+        this.damage = 24
         this.fireRate = 1
         this.ultimateAbility = 'bullet_storm'
     }
@@ -215,7 +215,7 @@ draw() {
     }
 
     bulletStorm() {
-        //Fires 10 shots fast 
+        //Fires 10 shots fast
         for (let i = 0; i < 10; i++) {
             if (this.target) {
                 this.projectiles.push(
@@ -264,7 +264,7 @@ fuseWith(otherTower) {
     if (fusionType === 'earthquake_titan') {
         this.name = 'Earthquake Titan'
         this.radius = 450
-        this.damage = 10000
+        this.damage = 1250
         this.fireRate = 0.2
         this.color = 'rgba(0, 0, 255, 0.5)'
         this.ultimateAbility = 'freeze'
@@ -273,7 +273,7 @@ fuseWith(otherTower) {
     } else if (fusionType === 'orbital_cannon') {
         this.name = 'Orbital Cannon'
         this.radius = 999999
-        this.damage = 4000
+        this.damage = 500
         this.fireRate = 1
         this.color = 'rgba(255, 0, 0, 0.5)'
         this.ultimateAbility = 'mass_damage'
@@ -282,7 +282,7 @@ fuseWith(otherTower) {
     }  else if (fusionType === 'minigun_fortress') {
         this.name = 'Minigun Fortress'
         this.radius = 300
-        this.damage = 500
+        this.damage = 60
         this.fireRate = 0.05
         this.color = 'rgba(0, 255, 0, 0.5)'
         this.multiShot = true
@@ -292,7 +292,7 @@ fuseWith(otherTower) {
     } else if (fusionType === 'railgun_destroyer') {
         this.name = 'Railgun Destroyer'
         this.radius = 600
-        this.damage = 1000
+        this.damage = 125
         this.fireRate = 0.6
         this.color = 'rgba(255, 255, 0, 0.5)'
         this.chargingShot = false
@@ -303,7 +303,7 @@ fuseWith(otherTower) {
     } else if (fusionType === 'grenade_launcher') {
         this.name = 'Grenade Launcher'
         this.radius = 350
-        this.damage = 1200
+        this.damage = 150
         this.splashDamage = 30
         this.fireRate = 0.3
         this.color = 'rgba(255, 165, 0, 0.5)'
@@ -313,7 +313,7 @@ fuseWith(otherTower) {
     } else if (fusionType === 'smart_turret') {
         this.name = 'Smart Turret'
         this.radius = 450
-        this.damage = 1600
+        this.damage = 200
         this.fireRate = 0.2
         this.color = 'rgba(128, 0, 128, 0.5)'
         this.targetingMode = 'speed' //could be speed, health, or boss
@@ -352,6 +352,7 @@ activateUltimate(enemies) {
                 }
             }
         })
+
      } else if (this.ultimateAbility === 'mass_damage') {
         // Deal 150 damage to all enemies
         enemies.forEach(enemy => {

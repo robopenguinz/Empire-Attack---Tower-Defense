@@ -14,6 +14,7 @@ A brower-based tower defense game built with HTML and JavaScript
 
 ## Fusion Towers
 
+## Follow the in-game tutorial, or read the how to play guide bellow:
 
 ## How to Play
 Combine two adjacent Level 3 towers (200 coins) to create unique Fusion Towers:
@@ -53,56 +54,66 @@ Maximum 3 fusions per game!
 8. Lose Condition:
     - Reach 0 hearts
 
+## Extra 
+- Each enemy kill ups the combo counter
+- After a couple, you gain a gold bonus for keeping a high combo
+- Also, towers have a small chance to deal critical damage
+
+# Targeting
+- When a tower clicked, you have to switch the tower's targeting to either:
+    -First, Last, Strongest, or Weakest
+
 ## Controls
 
  - Mouse Movement: Highlight available tower placement tiles and view tower info
  - Left Click: Place tower on highlighted tile or upgrade/merge existing towers (only if you have enough coins)
  - Shift + Click: Sell tower for 50% refund
  - ESC: Cancel fusion mode
+ - 'T': Cycles between tower target options on tower click
 
 ## Tower Stats by level
 
 ### Rock Launcher
 - Level 1: 250 range, 20 damage, moderate fire rate
 - Level 2: 300 range, 30 damage, faster fire rate
-- Level 3: 350 range, 300 damage, fast fire rate + Chain Lightning (every 5th shot)
+- Level 3: 350 range, 60 damage, fast fire rate + Chain Lightning (every 5th shot)
 
 ### Sniper Tower
 - Level 1: 400 range, 50 damage, slow fire rate
 - Level 2: 450 range, 75 damage, moderate fire rate
-- Level 3: 500 range, 750 damage, moderate fire rate + Piercing Shot
+- Level 3: 500 range, 150 damage, moderate fire rate + Piercing Shot
 
 ### Rapid Fire
 - Level 1: 180 range, 8 damage, very fast fire rate
 - Level 2: 220 range, 12 damage, very fast fire rate
-- Level 3: 260 range, 120 damage, very fast fire rate + Bullet Storm ultimate
+- Level 3: 260 range, 24 damage, very fast fire rate + Bullet Storm ultimate
 
 ## Fusion Tower Stats
 
 ### Earthquake Titan (Rock + Rock)
-- Range: 450 | Damage: 10,000 | Fire Rate: 0.2
+- Range: 450 | Damage: 1,250 | Fire Rate: 0.2
 - Ultimate: Freeze all enemies for 5 seconds (cooldown: 10s)
 
 ### Orbital Cannon (Sniper + Sniper)
-- Range: 999,999 (infinite) | Damage: 4,000 | Fire Rate: 1
+- Range: 999,999 (infinite) | Damage: 500 | Fire Rate: 1
 - Ultimate: Deal 1,500 damage to all enemies (cooldown: 7.5s)
 
 ### Minigun Fortress (Rapid + Rapid)
-- Range: 300 | Damage: 500 | Fire Rate: 0.05
+- Range: 300 | Damage: 60 | Fire Rate: 0.05
 - Multi-shot: Targets 3 enemies at once
 - Ultimate: Poison all enemies for 5 seconds (cooldown: 12.5s)
 
 ### Railgun Destroyer (Rock + Sniper)
-- Range: 600 | Damage: 1,000 | Fire Rate: 0.6
+- Range: 600 | Damage: 125 | Fire Rate: 0.6
 - Piercing shots that hit multiple enemies
 - Ultimate: Push all enemies back 2 waypoints (cooldown: 15s)
 
 ### Grenade Launcher (Rock + Rapid)
-- Range: 350 | Damage: 1,200 | Splash Damage: 30 | Fire Rate: 0.3
+- Range: 350 | Damage: 150 | Splash Damage: 30 | Fire Rate: 0.3
 - Ultimate: Deal 1,500 damage to all enemies (cooldown: 7.5s)
 
 ### Smart Turret (Sniper + Rapid)
-- Range: 450 | Damage: 1,600 | Fire Rate: 0.2
+- Range: 450 | Damage: 200 | Fire Rate: 0.2
 - Intelligent targeting system
 - Ultimate: Slow all enemies by 50% for 10 seconds (cooldown: 10s)
 
@@ -112,7 +123,7 @@ Maximum 3 fusions per game!
 - Next, focus on investments for Fusion Towers to slow down and chip away massive damage to hoards.
 - Finally, Sell heavy towers like snipers for rapid and rock towers for multi-shot attacks to fend off final round of enemies.
 
-- Last tip, make sure you have enough defenses for the final round. 
+- Last tip, make sure you have fusion towers built for the final wave!!!
 
 
 ## Credits
@@ -121,11 +132,14 @@ Maximum 3 fusions per game!
 - Game design and code: Christopher Mercado
 - Font: Changa One (Google Fonts)
 - Song: Glorious Morning by Waterflame
+- Sound Effects: Enemy hit - BoostSound
 
 ## Contact
 
 For questions, suggestions, or bug reports, please contact chrism900526@gmail.com
 
 ---
+
+## Special Thanks to everyone who tested the game while development!
 
 Enjoy defending!!! 
